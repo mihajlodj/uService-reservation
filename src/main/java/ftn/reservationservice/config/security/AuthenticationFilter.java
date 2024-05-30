@@ -1,4 +1,4 @@
-package ftn.reservationservice.security;
+package ftn.reservationservice.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

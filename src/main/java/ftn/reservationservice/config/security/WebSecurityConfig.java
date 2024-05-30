@@ -1,4 +1,4 @@
-package ftn.reservationservice.security;
+package ftn.reservationservice.config.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
