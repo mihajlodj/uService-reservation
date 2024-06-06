@@ -74,12 +74,12 @@ public class RequestForReservationService {
     }
 
     private void createChecks(RequestForReservation request, LodgeDto lodge, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
-        checkGuestNumberIsInRanges(request, lodge);                                         // check if guest number is in ranges
-        checkDatesRangeIsValid(request.getDateFrom(), request.getDateTo());                 // checkDatesRangeIsValid
-        checkIfThereIsLodgeAvailabilityPeriodForRequest(request, availabilityPeriods);      // check and get LodgeAvailabilityPeriodDto in which user wants to create RequestForReservation
-        // check if there is no RequestForReservation with status APPROVED, if there is disable from creating
-
+        checkGuestNumberIsInRanges(request, lodge);
+        checkDatesRangeIsValid(request.getDateFrom(), request.getDateTo());
+        checkIfThereIsLodgeAvailabilityPeriodForRequest(request, availabilityPeriods);
+        checkForExistingRequestForReservationWithOverlappingDateRange(request);
         // check if there is no reservation with Active status for that period, or for any period that is overlapping
+        
     }
 
     private void checkGuestNumberIsInRanges(RequestForReservation request, LodgeDto lodge) {
@@ -88,7 +88,7 @@ public class RequestForReservationService {
         }
     }
 
-    public void checkDatesRangeIsValid(LocalDateTime dateFrom, LocalDateTime dateTo) {
+    private void checkDatesRangeIsValid(LocalDateTime dateFrom, LocalDateTime dateTo) {
         // Check if dateFrom is earlier than dateTo
         if (!dateFrom.isBefore(dateTo)) {
             throw new BadRequestException("DateFrom is not earlier than DateTo.");
@@ -99,7 +99,7 @@ public class RequestForReservationService {
         }
     }
 
-    public void checkIfThereIsLodgeAvailabilityPeriodForRequest(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+    private void checkIfThereIsLodgeAvailabilityPeriodForRequest(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
         LodgeAvailabilityPeriodDto availabilityPeriod = getLodgeAvailabilityPeriodCompatibleWithRequest(request, availabilityPeriods);
         if (availabilityPeriod == null) {
             throw new BadRequestException("There is no lodge availability period for selected date range.");
@@ -115,6 +115,23 @@ public class RequestForReservationService {
             }
         }
         return retVal;
+    }
+
+    private void checkForExistingRequestForReservationWithOverlappingDateRange(RequestForReservation request) {
+        List<RequestForReservation> requestsForReservation = getRequestsForReservationForLodge(request.getLodgeId());
+        for (RequestForReservation existingRequest : requestsForReservation) {
+            if (existingRequest.getStatus() == RequestForReservationStatus.APPROVED) {          // if existing request is approved check if it is overlapping with new request
+                if (existingRequest.getDateTo().isAfter(request.getDateFrom())
+                        && existingRequest.getDateFrom().isBefore(request.getDateTo())) {
+                    throw new BadRequestException("There is approved request with overlapping dates with this one.");
+                }
+            }
+        }
+
+    }
+
+    public List<RequestForReservation> getRequestsForReservationForLodge(UUID lodgeId) {
+        return requestForReservationRepository.findByLodgeId(lodgeId);
     }
 
 }
