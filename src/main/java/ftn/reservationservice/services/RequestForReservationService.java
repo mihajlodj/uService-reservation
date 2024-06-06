@@ -3,6 +3,7 @@ package ftn.reservationservice.services;
 import ftn.reservationservice.domain.dtos.*;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
+import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.mappers.RequestForReservationMapper;
 import ftn.reservationservice.exception.exceptions.BadRequestException;
 import ftn.reservationservice.exception.exceptions.ForbiddenException;
@@ -25,6 +26,8 @@ public class RequestForReservationService {
     private final RestService restService;
 
     private final RequestForReservationRepository requestForReservationRepository;
+
+    private final ReservationService reservationService;
 
     public RequestForReservationDto create(RequestForReservationCreateRequest requestForReservationCreateRequest) {
         RequestForReservation request = RequestForReservationMapper.INSTANCE.fromCreateRequest(requestForReservationCreateRequest);
@@ -78,8 +81,7 @@ public class RequestForReservationService {
         checkDatesRangeIsValid(request.getDateFrom(), request.getDateTo());
         checkIfThereIsLodgeAvailabilityPeriodForRequest(request, availabilityPeriods);
         checkForExistingRequestForReservationWithOverlappingDateRange(request);
-        // check if there is no reservation with Active status for that period, or for any period that is overlapping
-        
+        checkForExistingReservationWithOverlappingDateRange(request);
     }
 
     private void checkGuestNumberIsInRanges(RequestForReservation request, LodgeDto lodge) {
@@ -132,6 +134,16 @@ public class RequestForReservationService {
 
     public List<RequestForReservation> getRequestsForReservationForLodge(UUID lodgeId) {
         return requestForReservationRepository.findByLodgeId(lodgeId);
+    }
+
+    private void checkForExistingReservationWithOverlappingDateRange(RequestForReservation request) {
+        List<Reservation> activeReservations = reservationService.getActiveReservationsForLodge(request.getLodgeId());
+        for (Reservation existingReservation : activeReservations) {
+            if (existingReservation.getDateTo().isAfter(request.getDateFrom())
+                    && existingReservation.getDateFrom().isBefore(request.getDateTo())) {
+                throw new BadRequestException("There is active reservation for this lodge with overlapping dates with this one.");
+            }
+        }
     }
 
 }
