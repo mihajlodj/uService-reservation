@@ -1,0 +1,120 @@
+package ftn.reservationservice.services;
+
+import ftn.reservationservice.domain.dtos.*;
+import ftn.reservationservice.domain.entities.RequestForReservation;
+import ftn.reservationservice.domain.entities.RequestForReservationStatus;
+import ftn.reservationservice.domain.mappers.RequestForReservationMapper;
+import ftn.reservationservice.exception.exceptions.BadRequestException;
+import ftn.reservationservice.exception.exceptions.ForbiddenException;
+import ftn.reservationservice.exception.exceptions.NotFoundException;
+import ftn.reservationservice.repositories.RequestForReservationRepository;
+import ftn.reservationservice.utils.AuthUtils;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class RequestForReservationService {
+
+    private final RestService restService;
+
+    private final RequestForReservationRepository requestForReservationRepository;
+
+    public RequestForReservationDto create(RequestForReservationCreateRequest requestForReservationCreateRequest) {
+        RequestForReservation request = RequestForReservationMapper.INSTANCE.fromCreateRequest(requestForReservationCreateRequest);
+        UserDto guest = getLoggedInUser();
+        checkLoggedInUserIsGuest(guest);
+        LodgeDto lodge = getLodge(request.getLodgeId());
+        List<LodgeAvailabilityPeriodDto> availabilityPeriods = getLodgeAvailabilityPeriods(request.getLodgeId());
+
+        createChecks(request, lodge, availabilityPeriods);
+
+        request.setGuestId(guest.getId());          // set guest id
+        request.setOwnerId(lodge.getOwnerId());     // set owner id
+        request.setPrice(99.99);                    // calculate price
+
+        return RequestForReservationMapper.INSTANCE.toDto(requestForReservationRepository.save(request));
+    }
+
+    private UserDto getLoggedInUser() {
+        UUID id = AuthUtils.getLoggedUserId();
+        UserDto user = restService.getUserById(id);
+        if (user == null) {
+            throw new NotFoundException("User doesn't exist");
+        }
+        return user;
+    }
+
+    private LodgeDto getLodge(UUID lodgeId) {
+        LodgeDto lodge = restService.getLodgeById(lodgeId);
+        if (lodge == null) {
+            throw new NotFoundException("Lodge doesn't exist");
+        }
+        return lodge;
+    }
+
+    private List<LodgeAvailabilityPeriodDto> getLodgeAvailabilityPeriods(UUID lodgeId) {
+        List<LodgeAvailabilityPeriodDto> availabilityPeriods = restService.getLodgeAvailabilityPeriods(lodgeId);
+        if (availabilityPeriods == null) {
+            throw new NotFoundException("LodgeAvailabilityPeriods doesn't exist");
+        }
+        return availabilityPeriods;
+    }
+
+    private void checkLoggedInUserIsGuest(UserDto user) {
+        if (!user.getRole().equals("GUEST")) {
+            throw new ForbiddenException("You are not logged in as guest.");
+        }
+    }
+
+    private void createChecks(RequestForReservation request, LodgeDto lodge, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+        checkGuestNumberIsInRanges(request, lodge);                                         // check if guest number is in ranges
+        checkDatesRangeIsValid(request.getDateFrom(), request.getDateTo());                 // checkDatesRangeIsValid
+        checkIfThereIsLodgeAvailabilityPeriodForRequest(request, availabilityPeriods);      // check and get LodgeAvailabilityPeriodDto in which user wants to create RequestForReservation
+        // check if there is no RequestForReservation with status APPROVED, if there is disable from creating
+
+        // check if there is no reservation with Active status for that period, or for any period that is overlapping
+    }
+
+    private void checkGuestNumberIsInRanges(RequestForReservation request, LodgeDto lodge) {
+        if (!( lodge.getMinimalGuestNumber() <= request.getNumberOfGuests() && request.getNumberOfGuests() <= lodge.getMaximalGuestNumber() )) {
+            throw new BadRequestException("Number of guests is not in range.");
+        }
+    }
+
+    public void checkDatesRangeIsValid(LocalDateTime dateFrom, LocalDateTime dateTo) {
+        // Check if dateFrom is earlier than dateTo
+        if (!dateFrom.isBefore(dateTo)) {
+            throw new BadRequestException("DateFrom is not earlier than DateTo.");
+        }
+        // Check if there is at least one day between dateFrom and dateTo
+        if (!dateFrom.plusDays(1).isBefore(dateTo)) {
+            throw new BadRequestException("Between DateFrom and DateTo needs to be at least one day.");
+        }
+    }
+
+    public void checkIfThereIsLodgeAvailabilityPeriodForRequest(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+        LodgeAvailabilityPeriodDto availabilityPeriod = getLodgeAvailabilityPeriodCompatibleWithRequest(request, availabilityPeriods);
+        if (availabilityPeriod == null) {
+            throw new BadRequestException("There is no lodge availability period for selected date range.");
+        }
+    }
+
+    public LodgeAvailabilityPeriodDto getLodgeAvailabilityPeriodCompatibleWithRequest(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+        LodgeAvailabilityPeriodDto retVal = null;
+        for (LodgeAvailabilityPeriodDto availabilityPeriod : availabilityPeriods) {
+            if (availabilityPeriod.getDateFrom().isBefore(request.getDateFrom()) && availabilityPeriod.getDateTo().isAfter(request.getDateTo()) ) {
+                retVal = availabilityPeriod;
+                break;
+            }
+        }
+        return retVal;
+    }
+
+}

@@ -27,7 +27,10 @@ public class RequestForReservation {
     @Column(nullable = false)
     private UUID guestId;
 
-    @Column
+    @Column(nullable = false)
+    private UUID ownerId;
+
+    @Column(nullable = false)
     private double price;
 
     @Column(nullable = false)

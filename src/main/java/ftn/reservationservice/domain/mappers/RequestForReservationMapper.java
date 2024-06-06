@@ -1,5 +1,6 @@
 package ftn.reservationservice.domain.mappers;
 
+import ftn.reservationservice.domain.dtos.RequestForReservationCreateRequest;
 import ftn.reservationservice.domain.dtos.RequestForReservationDto;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import org.mapstruct.Mapper;
@@ -15,6 +16,6 @@ public interface RequestForReservationMapper {
 
     RequestForReservationDto toDto(RequestForReservation requestForReservation);
 
-
+    RequestForReservation fromCreateRequest(RequestForReservationCreateRequest request);
 
 }
