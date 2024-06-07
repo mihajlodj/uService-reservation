@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,9 +39,10 @@ public class RequestForReservationService {
 
         createChecks(request, lodge, availabilityPeriods);
 
-        request.setGuestId(guest.getId());          // set guest id
-        request.setOwnerId(lodge.getOwnerId());     // set owner id
-        request.setPrice(99.99);                    // calculate price
+        request.setGuestId(guest.getId());
+        request.setOwnerId(lodge.getOwnerId());
+        double calculatedPrice = calculatePrice(request, availabilityPeriods);
+        request.setPrice(calculatedPrice);
 
         return RequestForReservationMapper.INSTANCE.toDto(requestForReservationRepository.save(request));
     }
@@ -144,6 +146,41 @@ public class RequestForReservationService {
                 throw new BadRequestException("There is active reservation for this lodge with overlapping dates with this one.");
             }
         }
+    }
+
+    private double calculatePrice(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+        LodgeAvailabilityPeriodDto availabilityPeriod = getLodgeAvailabilityPeriodCompatibleWithRequest(request, availabilityPeriods);
+        int numberOfDays = calculateDaysBetween(request.getDateFrom(), request.getDateTo());
+        if (availabilityPeriod.getPriceType().equals("PER_GUEST")) {
+            return calculatePricePerGuest(numberOfDays, request.getNumberOfGuests(), availabilityPeriod.getPrice());
+        }
+        else if (availabilityPeriod.getPriceType().equals("PER_LODGE")) {
+            return calculatePricePerLodge(numberOfDays, availabilityPeriod.getPrice());
+        }
+        return 0.0;
+    }
+
+    private int calculateDaysBetween(LocalDateTime start, LocalDateTime end) {
+        long daysBetween = ChronoUnit.DAYS.between(start, end);
+
+        // Calculate hours and minutes difference
+        long hoursBetween = ChronoUnit.HOURS.between(start, end);
+        long minutesBetween = ChronoUnit.MINUTES.between(start, end);
+
+        // Check if there are remaining hours/minutes that should cause rounding up
+        if (hoursBetween % 24 > 0 || minutesBetween % (24 * 60) > 0) {
+            daysBetween++;
+        }
+
+        return (int) daysBetween;
+    }
+
+    private double calculatePricePerGuest(int numberOfDays, int numberOfGuests, double specifiedPricePerGuest) {
+        return numberOfDays * numberOfGuests * specifiedPricePerGuest;
+    }
+
+    private double calculatePricePerLodge(int numberOfDays, double specifiedPricePerLodge) {
+        return numberOfDays * specifiedPricePerLodge;
     }
 
 }
