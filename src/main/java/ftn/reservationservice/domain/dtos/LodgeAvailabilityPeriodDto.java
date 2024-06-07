@@ -1,8 +1,6 @@
 package ftn.reservationservice.domain.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ftn.reservationservice.domain.entities.RequestForReservationStatus;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,13 +13,10 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestForReservationDto {
+public class LodgeAvailabilityPeriodDto {
 
     private UUID id;
     private UUID lodgeId;
-    private UUID guestId;
-    private UUID ownerId;
-    private double price;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
     private LocalDateTime dateFrom;
@@ -29,7 +24,7 @@ public class RequestForReservationDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
     private LocalDateTime dateTo;
 
-    private int numberOfGuests;
-    private RequestForReservationStatus status;
+    private String priceType;
+    private double price;
 
 }

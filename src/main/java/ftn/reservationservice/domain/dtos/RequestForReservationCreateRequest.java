@@ -3,6 +3,7 @@ package ftn.reservationservice.domain.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,21 +16,20 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestForReservationDto {
+public class RequestForReservationCreateRequest {
 
-    private UUID id;
+    @NotNull(message = "LodgeId is required")
     private UUID lodgeId;
-    private UUID guestId;
-    private UUID ownerId;
-    private double price;
 
+    @NotNull(message = "DateFrom can't be null")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
     private LocalDateTime dateFrom;
 
+    @NotNull(message = "DateTo can't be null")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
     private LocalDateTime dateTo;
 
+    @NotNull(message = "Number of guests is required")
     private int numberOfGuests;
-    private RequestForReservationStatus status;
 
 }
