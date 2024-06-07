@@ -44,6 +44,8 @@ public class RequestForReservationService {
         double calculatedPrice = calculatePrice(request, availabilityPeriods);
         request.setPrice(calculatedPrice);
 
+        // TODO: NOTIFICATION: send notification to LodgeOwner (HOST) that RequestForReservation is created
+
         return RequestForReservationMapper.INSTANCE.toDto(requestForReservationRepository.save(request));
     }
 
