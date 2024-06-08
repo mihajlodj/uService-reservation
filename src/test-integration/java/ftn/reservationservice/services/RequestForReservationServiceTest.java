@@ -6,6 +6,7 @@ import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import ftn.reservationservice.exception.exceptions.BadRequestException;
 import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
+import ftn.reservationservice.repositories.RequestForReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
     @Autowired
     private RequestForReservationService requestForReservationService;
+
+    @Autowired
+    private RequestForReservationRepository requestForReservationRepository;
 
     @MockBean
     private RestService restService;
@@ -303,6 +307,81 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(request.getDateTo(), response.getDateTo());
         assertEquals(request.getNumberOfGuests(), response.getNumberOfGuests());
         assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+    }
+
+    // DELETE tests
+
+    @Test
+    public void testDeleteRequestForReservationSuccessful() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(userId);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424891");
+
+        requestForReservationService.delete(requestForReservationId);
+
+        assertFalse(requestForReservationRepository.findById(requestForReservationId).isPresent());
+    }
+
+    @Test
+    public void testDeleteRequestForReservationUserDoesntExist() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424891");
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.delete(requestForReservationId));
+
+        assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
+    }
+
+    @Test
+    public void testDeleteRequestForReservationNotLoggedInAsGuest() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        UserDto mockUserDTO = UserDto.builder()
+                .id(UUID.fromString(userId))
+                .role("HOST")
+                .build();
+        when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424891");
+        assertThrows(ForbiddenException.class, () -> requestForReservationService.delete(requestForReservationId));
+
+        assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
+    }
+
+    @Test
+    public void testDeleteRequestForReservationThatDoesntExist() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(userId);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424891");
+        UUID wrongRequestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424892");
+        assertThrows(NotFoundException.class, () -> requestForReservationService.delete(wrongRequestForReservationId));
+
+        assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
+    }
+
+    @Test
+    public void testDeleteRequestForReservationGuestDidntMadeRequestForReservation() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(userId);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424894");
+        assertThrows(ForbiddenException.class, () -> requestForReservationService.delete(requestForReservationId));
+
+        assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
+    }
+
+    @Test
+    public void testDeleteRequestForReservationStatusDoesntEnablesDeletion() {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(userId);
+
+        UUID requestForReservationId = UUID.fromString("b86553e1-2552-41cb-9e40-7eeeee424850");
+        assertThrows(BadRequestException.class, () -> requestForReservationService.delete(requestForReservationId));
+
+        assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
     }
 
     private void mockGuest(String userId) {
