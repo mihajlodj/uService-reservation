@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,12 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+@Sql("/sql/reservation.sql")
 public class RequestForReservationControllerTest extends AuthPostgresIntegrationTest {
 
     @Autowired
@@ -73,6 +76,20 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.dateTo").value("2024-05-04 20:10:21.2632212"))
                 .andExpect(jsonPath("$.numberOfGuests").value(request.getNumberOfGuests()))
                 .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
+
+    }
+
+    @Test
+    public void testDeleteRequestForReservationSuccessful() throws Exception {
+        String userId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(userId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        mockMvc.perform(delete("/api/reservation/requestforreservation/" + requestForReservationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
     }
 
