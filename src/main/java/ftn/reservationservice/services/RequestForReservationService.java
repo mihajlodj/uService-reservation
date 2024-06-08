@@ -185,4 +185,29 @@ public class RequestForReservationService {
         return numberOfDays * specifiedPricePerLodge;
     }
 
+    public void delete(UUID id) {
+        UserDto guest = getLoggedInUser();
+        checkLoggedInUserIsGuest(guest);
+        RequestForReservation requestForReservation = getRequestForReservation(id);
+        checkIfGuestMadeRequestForReservation(guest, requestForReservation);
+        checkIfStatusEnablesDeletion(requestForReservation);
+        requestForReservationRepository.deleteById(requestForReservation.getId());
+    }
+
+    private RequestForReservation getRequestForReservation(UUID id) {
+        return requestForReservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+    }
+
+    private void checkIfGuestMadeRequestForReservation(UserDto guest, RequestForReservation requestForReservation) {
+        if (!guest.getId().equals(requestForReservation.getGuestId())) {
+            throw new ForbiddenException("You can't delete Request for reservation you didn't made.");
+        }
+    }
+
+    private void checkIfStatusEnablesDeletion(RequestForReservation requestForReservation) {
+        if (!requestForReservation.getStatus().equals(RequestForReservationStatus.WAITING_FOR_RESPONSE)) {
+            throw new BadRequestException("Request for reservation can be deleted only when it has status waiting for response.");
+        }
+    }
+
 }
