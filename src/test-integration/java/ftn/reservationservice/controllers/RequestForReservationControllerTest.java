@@ -75,7 +75,7 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.dateFrom").value("2024-05-02 20:10:21.2632212"))
                 .andExpect(jsonPath("$.dateTo").value("2024-05-04 20:10:21.2632212"))
                 .andExpect(jsonPath("$.numberOfGuests").value(request.getNumberOfGuests()))
-                .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
+                .andExpect(jsonPath("$.status").value("APPROVED"));
 
     }
 

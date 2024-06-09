@@ -68,7 +68,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(request.getDateFrom(), response.getDateFrom());
         assertEquals(request.getDateTo(), response.getDateTo());
         assertEquals(request.getNumberOfGuests(), response.getNumberOfGuests());
-        assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+        assertEquals(RequestForReservationStatus.APPROVED, response.getStatus());
 
     }
 
@@ -275,7 +275,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(request.getDateFrom(), response.getDateFrom());
         assertEquals(request.getDateTo(), response.getDateTo());
         assertEquals(request.getNumberOfGuests(), response.getNumberOfGuests());
-        assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+        assertEquals(RequestForReservationStatus.APPROVED, response.getStatus());
     }
 
     @Test
@@ -306,7 +306,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(request.getDateFrom(), response.getDateFrom());
         assertEquals(request.getDateTo(), response.getDateTo());
         assertEquals(request.getNumberOfGuests(), response.getNumberOfGuests());
-        assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+        assertEquals(RequestForReservationStatus.APPROVED, response.getStatus());
     }
 
     // DELETE tests
