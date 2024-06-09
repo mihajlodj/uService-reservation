@@ -2,10 +2,9 @@ package ftn.reservationservice.domain.mappers;
 
 import ftn.reservationservice.domain.dtos.RequestForReservationCreateRequest;
 import ftn.reservationservice.domain.dtos.RequestForReservationDto;
+import ftn.reservationservice.domain.dtos.RequestForReservationStatusUpdateRequest;
 import ftn.reservationservice.domain.entities.RequestForReservation;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -17,5 +16,15 @@ public interface RequestForReservationMapper {
     RequestForReservationDto toDto(RequestForReservation requestForReservation);
 
     RequestForReservation fromCreateRequest(RequestForReservationCreateRequest request);
+
+    @Mapping(ignore = true, target = "id")
+    @Mapping(ignore = true, target = "lodgeId")
+    @Mapping(ignore = true, target = "guestId")
+    @Mapping(ignore = true, target = "ownerId")
+    @Mapping(ignore = true, target = "price")
+    @Mapping(ignore = true, target = "dateFrom")
+    @Mapping(ignore = true, target = "dateTo")
+    @Mapping(ignore = true, target = "numberOfGuests")
+    void update(@MappingTarget RequestForReservation requestForReservation, RequestForReservationStatusUpdateRequest request);
 
 }

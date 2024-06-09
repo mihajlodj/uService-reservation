@@ -222,4 +222,57 @@ public class RequestForReservationService {
         }
     }
 
+    public RequestForReservationDto update(UUID id, RequestForReservationStatusUpdateRequest updateRequest) {
+        RequestForReservation request = getRequestForReservation(id);
+        checkIfRequestForReservationStatusCanBeUpdated(request);
+        UserDto owner = getLoggedInUser();
+        LodgeDto lodge = getLodge(request.getLodgeId());
+        checkIfLoggedInUserIsLodgeOwner(owner, lodge);
+        checkIfApprovalTypeForLodgeIsManual(lodge);
+        RequestForReservationMapper.INSTANCE.update(request, updateRequest);
+        checkIfRequestForReservationStatusIsValidAfterUpdate(request);
+        RequestForReservation updatedRequest = requestForReservationRepository.save(request);
+        if (updatedRequest.getStatus() == RequestForReservationStatus.APPROVED) {
+            requestForReservationApproved(updatedRequest);
+        }
+        else {      // RequestForReservationStatus.DENIED
+            requestForReservationDenied();
+        }
+        return RequestForReservationMapper.INSTANCE.toDto(updatedRequest);
+    }
+
+    private void checkIfLoggedInUserIsLodgeOwner(UserDto owner, LodgeDto lodge) {
+        if (!lodge.getOwnerId().equals(owner.getId())) {
+            throw new BadRequestException("You can change status of Request for reservation only for Lodges you own.");
+        }
+    }
+
+    private void checkIfRequestForReservationStatusCanBeUpdated(RequestForReservation request) {
+        if (request.getStatus() != RequestForReservationStatus.WAITING_FOR_RESPONSE) {
+            throw new BadRequestException("You can update status of Request for reservation only when status is WAITING_FOR_RESPONSE.");
+        }
+    }
+
+    private void checkIfRequestForReservationStatusIsValidAfterUpdate(RequestForReservation request) {
+        if (request.getStatus() == RequestForReservationStatus.WAITING_FOR_RESPONSE) {
+            throw new BadRequestException("You can update status of Request for reservation only to APPROVED or DENIED status.");
+        }
+    }
+
+    private void checkIfApprovalTypeForLodgeIsManual(LodgeDto lodge) {
+        if (!lodge.getApprovalType().equals("MANUAL")) {
+            throw new BadRequestException("You can't update status of Request for reservation manually because it is not selected for this Lodge.");
+        }
+    }
+
+    private void requestForReservationApproved(RequestForReservation request) {
+        reservationService.createReservation(request);
+        // TODO: NOTIFICATION: send notification to guest that host approved manually reservation request
+    }
+
+    private void requestForReservationDenied() {
+        System.out.println("DENIED Request");
+        // TODO: NOTIFICATION: send notification to guest that host denied manually reservation request
+    }
+
 }
