@@ -7,6 +7,7 @@ import ftn.reservationservice.exception.exceptions.BadRequestException;
 import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
+import ftn.reservationservice.repositories.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
     @Autowired
     private RequestForReservationRepository requestForReservationRepository;
 
+    @Autowired
+    private ReservationRepository reservationRepository;
+
     @MockBean
     private RestService restService;
 
@@ -47,7 +51,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -79,7 +83,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -105,7 +109,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -147,7 +151,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         when(restService.getLodgeAvailabilityPeriods(any(UUID.class))).thenReturn(null);
 
@@ -170,7 +174,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -191,7 +195,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -212,7 +216,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -233,7 +237,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -254,7 +258,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods2(lodgeId);
 
@@ -285,7 +289,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
-        mockLodge(lodgeId, lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
 
         mockLodgeAvailabilityPeriods(lodgeId);
 
@@ -384,6 +388,209 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertTrue(requestForReservationRepository.findById(requestForReservationId).isPresent());
     }
 
+    // Update
+
+    @Test
+    public void testUpdateRequestForReservationApprovedSuccessful() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        RequestForReservationDto response = requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest);
+
+        assertNotNull(response);
+        assertEquals(UUID.fromString(lodgeId), response.getLodgeId());
+        assertEquals(UUID.fromString(guestId), response.getGuestId());
+        assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
+        assertEquals(99.99, response.getPrice());
+        assertEquals(RequestForReservationStatus.APPROVED, response.getStatus());
+
+        assertEquals(1, reservationRepository.findAll().size());
+
+    }
+
+    @Test
+    public void testUpdateRequestForReservationDeniedSuccessful() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.DENIED)
+                .build();
+
+        RequestForReservationDto response = requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest);
+
+        assertNotNull(response);
+        assertEquals(UUID.fromString(lodgeId), response.getLodgeId());
+        assertEquals(UUID.fromString(guestId), response.getGuestId());
+        assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
+        assertEquals(99.99, response.getPrice());
+        assertEquals(RequestForReservationStatus.DENIED, response.getStatus());
+
+        assertEquals(0, reservationRepository.findAll().size());
+
+    }
+
+    @Test
+    public void testUpdateRequestForReservationRequestDoesntExist() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424892";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.DENIED)
+                .build();
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationStatusIsNotAppropriate() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424823";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        assertThrows(BadRequestException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationUserDoesntExist() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424892";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationLodgeDoesntExist() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        when(restService.getLodgeById(any(UUID.class))).thenReturn(null);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424892";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationLoggedInUserIsNotLodgeOwner() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        String fakeLodgeOwner = "e49fcab5-d45b-4556-9d91-14e58177aaa1";
+        mockLodgeManualApproval(lodgeId, fakeLodgeOwner);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424833";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        assertThrows(BadRequestException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationManualApprovalNotSelected() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        assertThrows(BadRequestException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
+    @Test
+    public void testUpdateRequestForReservationStatusAfterUpdateNotValid() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.WAITING_FOR_RESPONSE)
+                .build();
+
+        assertThrows(BadRequestException.class, () -> requestForReservationService.update(UUID.fromString(requestForReservationId),
+                updateRequest));
+
+        assertEquals(0, reservationRepository.findAll().size());
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
@@ -393,7 +600,16 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
     }
 
-    private void mockLodge(String lodgeId, String lodgeOwnerId) {
+    private void mockOwner(String ownerId) {
+        UserDto mockUserDTO = UserDto.builder()
+                .id(UUID.fromString(ownerId))
+                .role("HOST")
+                .build();
+
+        when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
+    }
+
+    private void mockLodgeAutomaticApproval(String lodgeId, String lodgeOwnerId) {
         LodgeDto mockLodgeDTO = LodgeDto.builder()
                 .id(UUID.fromString(lodgeId))
                 .ownerId(UUID.fromString(lodgeOwnerId))
@@ -402,6 +618,20 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
                 .minimalGuestNumber(1)
                 .maximalGuestNumber(3)
                 .approvalType("AUTOMATIC")
+                .build();
+
+        when(restService.getLodgeById(any(UUID.class))).thenReturn(mockLodgeDTO);
+    }
+
+    private void mockLodgeManualApproval(String lodgeId, String lodgeOwnerId) {
+        LodgeDto mockLodgeDTO = LodgeDto.builder()
+                .id(UUID.fromString(lodgeId))
+                .ownerId(UUID.fromString(lodgeOwnerId))
+                .name("Vikendica")
+                .location("Lokacija1")
+                .minimalGuestNumber(1)
+                .maximalGuestNumber(3)
+                .approvalType("MANUAL")
                 .build();
 
         when(restService.getLodgeById(any(UUID.class))).thenReturn(mockLodgeDTO);
