@@ -2,10 +2,8 @@ package ftn.reservationservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ftn.reservationservice.AuthPostgresIntegrationTest;
-import ftn.reservationservice.domain.dtos.LodgeAvailabilityPeriodDto;
-import ftn.reservationservice.domain.dtos.LodgeDto;
-import ftn.reservationservice.domain.dtos.RequestForReservationCreateRequest;
-import ftn.reservationservice.domain.dtos.UserDto;
+import ftn.reservationservice.domain.dtos.*;
+import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import ftn.reservationservice.services.RestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +21,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -75,7 +72,7 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.dateFrom").value("2024-05-02 20:10:21.2632212"))
                 .andExpect(jsonPath("$.dateTo").value("2024-05-04 20:10:21.2632212"))
                 .andExpect(jsonPath("$.numberOfGuests").value(request.getNumberOfGuests()))
-                .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
+                .andExpect(jsonPath("$.status").value("APPROVED"));
 
     }
 
@@ -93,10 +90,51 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
 
     }
 
+    @Test
+    public void testUpdateRequestForReservationApprovedSuccessful() throws Exception {
+        authenticateHost();
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationStatusUpdateRequest updateRequest = RequestForReservationStatusUpdateRequest.builder()
+                .status(RequestForReservationStatus.APPROVED)
+                .build();
+
+        mockMvc.perform(put("/api/reservation/requestforreservation/" + requestForReservationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.lodgeId").value(lodgeId))
+                .andExpect(jsonPath("$.guestId").value(guestId))
+                .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
+                .andExpect(jsonPath("$.price").value(99.99))
+                .andExpect(jsonPath("$.status").value("APPROVED"));
+
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
                 .role("GUEST")
+                .build();
+
+        when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
+    }
+
+    private void mockOwner(String ownerId) {
+        UserDto mockUserDTO = UserDto.builder()
+                .id(UUID.fromString(ownerId))
+                .role("HOST")
                 .build();
 
         when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
@@ -111,6 +149,20 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .minimalGuestNumber(1)
                 .maximalGuestNumber(3)
                 .approvalType("AUTOMATIC")
+                .build();
+
+        when(restService.getLodgeById(any(UUID.class))).thenReturn(mockLodgeDTO);
+    }
+
+    private void mockLodgeManualApproval(String lodgeId, String lodgeOwnerId) {
+        LodgeDto mockLodgeDTO = LodgeDto.builder()
+                .id(UUID.fromString(lodgeId))
+                .ownerId(UUID.fromString(lodgeOwnerId))
+                .name("Vikendica")
+                .location("Lokacija1")
+                .minimalGuestNumber(1)
+                .maximalGuestNumber(3)
+                .approvalType("MANUAL")
                 .build();
 
         when(restService.getLodgeById(any(UUID.class))).thenReturn(mockLodgeDTO);

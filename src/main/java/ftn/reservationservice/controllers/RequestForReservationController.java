@@ -1,6 +1,7 @@
 package ftn.reservationservice.controllers;
 
 import ftn.reservationservice.domain.dtos.RequestForReservationCreateRequest;
+import ftn.reservationservice.domain.dtos.RequestForReservationStatusUpdateRequest;
 import ftn.reservationservice.services.RequestForReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,12 @@ public class RequestForReservationController {
     public ResponseEntity<?> deleteRequestForReservation(@PathVariable UUID id) {
         requestForReservationService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> approveOrDenyRequest(@PathVariable UUID id, @RequestBody RequestForReservationStatusUpdateRequest updateRequest) {
+        return ResponseEntity.ok(requestForReservationService.update(id, updateRequest));
     }
 
 }
