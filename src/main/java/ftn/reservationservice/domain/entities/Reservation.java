@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "request_for_reservation")
+@Table(name = "reservation")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,7 +30,7 @@ public class Reservation {
     @Column(nullable = false)
     private UUID ownerId;
 
-    @Column
+    @Column(nullable = false)
     private double price;
 
     @Column(nullable = false)

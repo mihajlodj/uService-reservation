@@ -1,7 +1,9 @@
 package ftn.reservationservice.services;
 
+import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.entities.ReservationStatus;
+import ftn.reservationservice.domain.mappers.ReservationMapper;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
 import ftn.reservationservice.repositories.ReservationRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +24,12 @@ public class ReservationService {
 
     public List<Reservation> getActiveReservationsForLodge(UUID lodgeId) {
         return reservationRepository.findByStatusAndLodgeId(ReservationStatus.ACTIVE, lodgeId);
+    }
+
+    public Reservation createReservation(RequestForReservation request) {
+        Reservation reservation = ReservationMapper.INSTANCE.toReservation(request);
+        reservation.setStatus(ReservationStatus.ACTIVE);
+        return reservationRepository.save(reservation);
     }
 
 }

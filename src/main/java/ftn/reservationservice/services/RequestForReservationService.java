@@ -46,6 +46,8 @@ public class RequestForReservationService {
 
         // TODO: NOTIFICATION: send notification to LodgeOwner (HOST) that RequestForReservation is created
 
+        requestAutomaticApproval(request, lodge, guest);
+
         return RequestForReservationMapper.INSTANCE.toDto(requestForReservationRepository.save(request));
     }
 
@@ -183,6 +185,16 @@ public class RequestForReservationService {
 
     private double calculatePricePerLodge(int numberOfDays, double specifiedPricePerLodge) {
         return numberOfDays * specifiedPricePerLodge;
+    }
+
+    private void requestAutomaticApproval(RequestForReservation request, LodgeDto lodge, UserDto guest) {
+        if (!lodge.getApprovalType().equals("AUTOMATIC")) {
+            return;
+        }
+        reservationService.createReservation(request);
+        request.setStatus(RequestForReservationStatus.APPROVED);
+        // TODO: NOTIFICATION: send notification to guest that host approved automatically reservation request
+
     }
 
     public void delete(UUID id) {
