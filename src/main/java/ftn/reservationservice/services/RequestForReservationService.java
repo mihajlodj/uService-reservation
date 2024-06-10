@@ -275,4 +275,34 @@ public class RequestForReservationService {
         // TODO: NOTIFICATION: send notification to guest that host denied manually reservation request
     }
 
+    public List<RequestForReservationDto> getHostReservationRequests() {
+        UserDto host = getLoggedInUser();
+        List<RequestForReservation> requests = requestForReservationRepository.findByOwnerId(host.getId());
+        return RequestForReservationMapper.INSTANCE.toDto(requests);
+    }
+
+    public List<RequestForReservationDto> getGuestReservationRequests() {
+        UserDto guest = getLoggedInUser();
+        List<RequestForReservation> requests = requestForReservationRepository.findByGuestId(guest.getId());
+        return RequestForReservationMapper.INSTANCE.toDto(requests);
+    }
+
+    public RequestForReservationDto getReservationRequestByIdHost(UUID id) {
+        UserDto host = getLoggedInUser();
+        RequestForReservation request = requestForReservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+        if (!request.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservation requests for lodges you own.");
+        }
+        return RequestForReservationMapper.INSTANCE.toDto(request);
+    }
+
+    public RequestForReservationDto getReservationRequestByIdGuest(UUID id) {
+        UserDto guest = getLoggedInUser();
+        RequestForReservation request = requestForReservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+        if (!request.getGuestId().equals(guest.getId())) {
+            throw new ForbiddenException("You can only get reservation requests for lodges you made requests for.");
+        }
+        return RequestForReservationMapper.INSTANCE.toDto(request);
+    }
+
 }

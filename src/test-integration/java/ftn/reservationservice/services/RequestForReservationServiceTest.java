@@ -591,6 +591,150 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(0, reservationRepository.findAll().size());
     }
 
+    // Get
+
+    @Test
+    public void testGetHostReservationRequestsSuccess() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        List<RequestForReservationDto> response = requestForReservationService.getHostReservationRequests();
+
+        assertNotNull(response);
+        assertEquals(4, response.size());
+
+    }
+
+    @Test
+    public void testGetHostReservationRequestsOwnerNotFound() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getHostReservationRequests());
+    }
+
+    @Test
+    public void testGetGuestReservationRequestsSuccess() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        List<RequestForReservationDto> response = requestForReservationService.getGuestReservationRequests();
+
+        assertNotNull(response);
+        assertEquals(4, response.size());
+
+    }
+
+    @Test
+    public void testGetGuestReservationRequestsGuestNotFound() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getGuestReservationRequests());
+    }
+
+    @Test
+    public void testGetReservationRequestByIdHostSuccess() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationDto response = requestForReservationService.getReservationRequestByIdHost(UUID.fromString(requestForReservationId));
+
+        assertNotNull(response);
+        assertEquals(UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850"), response.getLodgeId());
+        assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
+        assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
+        assertEquals(99.99, response.getPrice());
+        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(2, response.getNumberOfGuests());
+        assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+
+    }
+
+    @Test
+    public void testGetReservationRequestByIdHostOwnerNotFound() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getReservationRequestByIdHost(UUID.fromString(requestForReservationId)));
+    }
+
+    @Test
+    public void testGetReservationRequestByIdHostRequestNotFound() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String requestForReservationId = "b86543e1-2552-41cb-9e40-7eeeee424891";
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getReservationRequestByIdHost(UUID.fromString(requestForReservationId)));
+    }
+
+    @Test
+    public void testGetReservationRequestByIdHostThatIsNotOwner() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424833";
+
+        assertThrows(ForbiddenException.class, () -> requestForReservationService.getReservationRequestByIdHost(UUID.fromString(requestForReservationId)));
+    }
+
+    @Test
+    public void testGetReservationRequestByIdGuestSuccess() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        RequestForReservationDto response = requestForReservationService.getReservationRequestByIdGuest(UUID.fromString(requestForReservationId));
+
+        assertNotNull(response);
+        assertEquals(UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850"), response.getLodgeId());
+        assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
+        assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
+        assertEquals(99.99, response.getPrice());
+        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(2, response.getNumberOfGuests());
+        assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
+
+    }
+
+    @Test
+    public void testGetReservationRequestByIdGuestNotFound() {
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getReservationRequestByIdGuest(UUID.fromString(requestForReservationId)));
+    }
+
+    @Test
+    public void testGetReservationRequestByIdGuestRequestNotFound() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        String requestForReservationId = "b86543e1-2552-41cb-9e40-7eeeee424891";
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getReservationRequestByIdGuest(UUID.fromString(requestForReservationId)));
+    }
+
+    @Test
+    public void testGetReservationRequestByIdGuestThatDidntMadeRequest() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424894";
+
+        assertThrows(ForbiddenException.class, () -> requestForReservationService.getReservationRequestByIdGuest(UUID.fromString(requestForReservationId)));
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))

@@ -38,4 +38,28 @@ public class RequestForReservationController {
         return ResponseEntity.ok(requestForReservationService.update(id, updateRequest));
     }
 
+    @GetMapping("/all/host")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getHostReservationRequests() {
+        return ResponseEntity.ok(requestForReservationService.getHostReservationRequests());
+    }
+
+    @GetMapping("/all/guest")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getGuestReservationRequests() {
+        return ResponseEntity.ok(requestForReservationService.getGuestReservationRequests());
+    }
+
+    @GetMapping("/host/{id}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getReservationRequestByIdHost(@PathVariable UUID id) {
+        return ResponseEntity.ok(requestForReservationService.getReservationRequestByIdHost(id));
+    }
+
+    @GetMapping("/guest/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getReservationRequestByIdGuest(@PathVariable UUID id) {
+        return ResponseEntity.ok(requestForReservationService.getReservationRequestByIdGuest(id));
+    }
+
 }

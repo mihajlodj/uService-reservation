@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,6 +121,89 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
                 .andExpect(jsonPath("$.status").value("APPROVED"));
+
+    }
+
+    @Test
+    public void testGetHostReservationRequestsSuccess() throws Exception{
+        authenticateHost();
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/all/host")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(4)));
+
+    }
+
+    @Test
+    public void testGetGuestReservationRequestsSuccess() throws Exception{
+        authenticateGuest();
+
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/all/guest")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(4)));
+
+    }
+
+    @Test
+    public void testGetReservationRequestByIdHostSuccess() throws Exception {
+        authenticateHost();
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/host/" + requestForReservationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.lodgeId").value("b86553e1-2552-41cb-9e40-7ef87c424850"))
+                .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
+                .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
+                .andExpect(jsonPath("$.price").value(99.99))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.numberOfGuests").value(2))
+                .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
+
+    }
+
+    @Test
+    public void testGetReservationRequestByIdGuestSuccess() throws Exception {
+        authenticateGuest();
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+
+        String requestForReservationId = "b86553e1-2552-41cb-9e40-7eeeee424891";
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/guest/" + requestForReservationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.lodgeId").value("b86553e1-2552-41cb-9e40-7ef87c424850"))
+                .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
+                .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
+                .andExpect(jsonPath("$.price").value(99.99))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.numberOfGuests").value(2))
+                .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
 
     }
 
