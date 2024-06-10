@@ -281,4 +281,10 @@ public class RequestForReservationService {
         return RequestForReservationMapper.INSTANCE.toDto(requests);
     }
 
+    public List<RequestForReservationDto> getGuestReservationRequests() {
+        UserDto guest = getLoggedInUser();
+        List<RequestForReservation> requests = requestForReservationRepository.findByGuestId(guest.getId());
+        return RequestForReservationMapper.INSTANCE.toDto(requests);
+    }
+
 }

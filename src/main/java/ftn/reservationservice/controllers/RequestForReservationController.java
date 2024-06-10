@@ -44,4 +44,10 @@ public class RequestForReservationController {
         return ResponseEntity.ok(requestForReservationService.getHostReservationRequests());
     }
 
+    @GetMapping("/all/guest")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getGuestReservationRequests() {
+        return ResponseEntity.ok(requestForReservationService.getGuestReservationRequests());
+    }
+
 }
