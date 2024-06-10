@@ -80,6 +80,24 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertThrows(NotFoundException.class, () -> reservationService.getMyReservationsHost());
     }
 
+    @Test
+    public void testGetMyReservationsGuestSuccess() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        List<ReservationDto> response = reservationService.getMyReservationsGuest();
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+    }
+
+    @Test
+    public void testGetMyReservationsGuestNotFound() {
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> reservationService.getMyReservationsGuest());
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
