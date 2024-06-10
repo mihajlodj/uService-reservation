@@ -30,4 +30,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getMyReservationsHost());
     }
 
+    @GetMapping("/all/guest")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getMyReservationsGuest() {
+        return ResponseEntity.ok(reservationService.getMyReservationsGuest());
+    }
+
 }

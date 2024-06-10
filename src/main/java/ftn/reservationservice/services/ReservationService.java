@@ -59,4 +59,10 @@ public class ReservationService {
         return user;
     }
 
+    public List<ReservationDto> getMyReservationsGuest() {
+        UserDto guest = getLoggedInUser();
+        List<Reservation> reservations = reservationRepository.findByGuestId(guest.getId());
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
 }
