@@ -1,5 +1,6 @@
 buildscript {
     ext {
+        serviceVersion = '1.0.0'
         springBootVersion = '3.2.0'
         querydslVersion = "5.0.0"
         mapstructVersion = "1.5.5.Final"
@@ -14,7 +15,6 @@ plugins {
 }
 
 group = 'ftn'
-version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
