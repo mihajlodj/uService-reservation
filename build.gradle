@@ -52,6 +52,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.postgresql:postgresql'
 
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
     implementation "com.querydsl:querydsl-jpa:${querydslVersion}:jakarta"
     implementation "com.querydsl:querydsl-sql-spring:${querydslVersion}"
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
