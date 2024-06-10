@@ -24,4 +24,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.countCanceledReservationsByGuest(guestId));
     }
 
+    @GetMapping("/all/host")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getMyReservationsHost() {
+        return ResponseEntity.ok(reservationService.getMyReservationsHost());
+    }
+
 }

@@ -1,6 +1,7 @@
 package ftn.reservationservice.services;
 
 import ftn.reservationservice.domain.dtos.CanceledReservationsCountDto;
+import ftn.reservationservice.domain.dtos.ReservationDto;
 import ftn.reservationservice.domain.dtos.UserDto;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
@@ -41,6 +42,21 @@ public class ReservationService {
         return CanceledReservationsCountDto.builder()
                 .count(count)
                 .build();
+    }
+
+    public List<ReservationDto> getMyReservationsHost() {
+        UserDto host = getLoggedInUser();
+        List<Reservation> reservations = reservationRepository.findByOwnerId(host.getId());
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    private UserDto getLoggedInUser() {
+        UUID id = AuthUtils.getLoggedUserId();
+        UserDto user = restService.getUserById(id);
+        if (user == null) {
+            throw new NotFoundException("User doesn't exist");
+        }
+        return user;
     }
 
 }
