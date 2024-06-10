@@ -1,12 +1,14 @@
 package ftn.reservationservice.services;
 
 import ftn.reservationservice.domain.dtos.CanceledReservationsCountDto;
+import ftn.reservationservice.domain.dtos.LodgeDto;
 import ftn.reservationservice.domain.dtos.ReservationDto;
 import ftn.reservationservice.domain.dtos.UserDto;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.entities.ReservationStatus;
 import ftn.reservationservice.domain.mappers.ReservationMapper;
+import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
 import ftn.reservationservice.repositories.ReservationRepository;
@@ -63,6 +65,24 @@ public class ReservationService {
         UserDto guest = getLoggedInUser();
         List<Reservation> reservations = reservationRepository.findByGuestId(guest.getId());
         return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    public List<ReservationDto> getReservationsForLodge(UUID lodgeId) {
+        UserDto host = getLoggedInUser();
+        LodgeDto lodge = getLodge(lodgeId);
+        if (!lodge.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservations for lodges you own.");
+        }
+        List<Reservation> reservations = reservationRepository.findByLodgeId(lodgeId);
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    private LodgeDto getLodge(UUID lodgeId) {
+        LodgeDto lodge = restService.getLodgeById(lodgeId);
+        if (lodge == null) {
+            throw new NotFoundException("Lodge doesn't exist");
+        }
+        return lodge;
     }
 
 }
