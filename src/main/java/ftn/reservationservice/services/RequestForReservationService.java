@@ -275,4 +275,10 @@ public class RequestForReservationService {
         // TODO: NOTIFICATION: send notification to guest that host denied manually reservation request
     }
 
+    public List<RequestForReservationDto> getHostReservationRequests() {
+        UserDto host = getLoggedInUser();
+        List<RequestForReservation> requests = requestForReservationRepository.findByOwnerId(host.getId());
+        return RequestForReservationMapper.INSTANCE.toDto(requests);
+    }
+
 }

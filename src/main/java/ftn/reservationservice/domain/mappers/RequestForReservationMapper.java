@@ -7,6 +7,8 @@ import ftn.reservationservice.domain.entities.RequestForReservation;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface RequestForReservationMapper {
@@ -14,6 +16,8 @@ public interface RequestForReservationMapper {
     RequestForReservationMapper INSTANCE = Mappers.getMapper(RequestForReservationMapper.class);
 
     RequestForReservationDto toDto(RequestForReservation requestForReservation);
+
+    List<RequestForReservationDto> toDto(List<RequestForReservation> requestForReservation);
 
     RequestForReservation fromCreateRequest(RequestForReservationCreateRequest request);
 

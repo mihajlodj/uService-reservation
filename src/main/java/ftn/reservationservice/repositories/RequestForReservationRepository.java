@@ -13,4 +13,6 @@ public interface RequestForReservationRepository extends JpaRepository<RequestFo
 
     List<RequestForReservation> findByLodgeId(UUID lodgeId);
 
+    List<RequestForReservation> findByOwnerId(UUID ownerId);
+
 }
