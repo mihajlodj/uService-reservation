@@ -296,4 +296,13 @@ public class RequestForReservationService {
         return RequestForReservationMapper.INSTANCE.toDto(request);
     }
 
+    public RequestForReservationDto getReservationRequestByIdGuest(UUID id) {
+        UserDto guest = getLoggedInUser();
+        RequestForReservation request = requestForReservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+        if (!request.getGuestId().equals(guest.getId())) {
+            throw new ForbiddenException("You can only get reservation requests for lodges you made requests for.");
+        }
+        return RequestForReservationMapper.INSTANCE.toDto(request);
+    }
+
 }
