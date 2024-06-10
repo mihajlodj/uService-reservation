@@ -613,6 +613,27 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertThrows(NotFoundException.class, () -> requestForReservationService.getHostReservationRequests());
     }
 
+    @Test
+    public void testGetGuestReservationRequestsSuccess() {
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        List<RequestForReservationDto> response = requestForReservationService.getGuestReservationRequests();
+
+        assertNotNull(response);
+        assertEquals(4, response.size());
+
+    }
+
+    @Test
+    public void testGetGuestReservationRequestsGuestNotFound() {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> requestForReservationService.getGuestReservationRequests());
+    }
+
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
