@@ -2,6 +2,7 @@ package ftn.reservationservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ftn.reservationservice.AuthPostgresIntegrationTest;
+import ftn.reservationservice.domain.dtos.UserDto;
 import ftn.reservationservice.repositories.ReservationRepository;
 import ftn.reservationservice.services.ReservationService;
 import ftn.reservationservice.services.RestService;
@@ -13,6 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,6 +74,40 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.count").value(1));
 
+    }
+
+    @Test
+    public void testGetMyReservationsHostSuccess() throws Exception {
+        authenticateHost();
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        mockMvc.perform(get("/api/reservation/all/host")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(2)));
+
+    }
+
+    private void mockGuest(String userId) {
+        UserDto mockUserDTO = UserDto.builder()
+                .id(UUID.fromString(userId))
+                .role("GUEST")
+                .build();
+
+        when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
+    }
+
+    private void mockOwner(String ownerId) {
+        UserDto mockUserDTO = UserDto.builder()
+                .id(UUID.fromString(ownerId))
+                .role("HOST")
+                .build();
+
+        when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
     }
 
 }
