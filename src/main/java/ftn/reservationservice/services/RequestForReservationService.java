@@ -287,4 +287,13 @@ public class RequestForReservationService {
         return RequestForReservationMapper.INSTANCE.toDto(requests);
     }
 
+    public RequestForReservationDto getReservationRequestByIdHost(UUID id) {
+        UserDto host = getLoggedInUser();
+        RequestForReservation request = requestForReservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+        if (!request.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservation requests for lodges you own.");
+        }
+        return RequestForReservationMapper.INSTANCE.toDto(request);
+    }
+
 }
