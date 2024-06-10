@@ -1,11 +1,9 @@
 package ftn.reservationservice.services;
 
 import ftn.reservationservice.AuthPostgresIntegrationTest;
-import ftn.reservationservice.domain.dtos.CanceledReservationsCountDto;
-import ftn.reservationservice.domain.dtos.RequestForReservationDto;
-import ftn.reservationservice.domain.dtos.ReservationDto;
-import ftn.reservationservice.domain.dtos.UserDto;
+import ftn.reservationservice.domain.dtos.*;
 import ftn.reservationservice.domain.entities.Reservation;
+import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +55,7 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         CanceledReservationsCountDto response = reservationService.countCanceledReservationsByGuest(UUID.fromString(guestId));
 
         assertNotNull(response);
-        assertEquals(1, response.getCount());
+        assertEquals(2, response.getCount());
 
     }
 
@@ -98,6 +96,54 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertThrows(NotFoundException.class, () -> reservationService.getMyReservationsGuest());
     }
 
+    @Test
+    public void testGetReservationsForLodgeSuccess() {
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+
+        mockOwner(lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
+
+        List<ReservationDto> response = reservationService.getReservationsForLodge(UUID.fromString(lodgeId));
+
+        assertNotNull(response);
+        assertEquals(2, response.size());
+    }
+
+    @Test
+    public void testGetReservationsForLodgeOwnerNotFound() {
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+
+        when(restService.getUserById(any(UUID.class))).thenReturn(null);
+        mockLodgeAutomaticApproval(lodgeId, lodgeOwnerId);
+
+        assertThrows(NotFoundException.class, () -> reservationService.getReservationsForLodge(UUID.fromString(lodgeId)));
+    }
+
+    @Test
+    public void testGetReservationsForLodgeNotFound() {
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+
+        mockOwner(lodgeOwnerId);
+        when(restService.getLodgeById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> reservationService.getReservationsForLodge(UUID.fromString(lodgeId)));
+    }
+
+    @Test
+    public void testGetReservationsForLodgeThatOwnerDoesntOwn() {
+        String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424859";
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        String fakeOwnerId = "e49fcab5-d45b-4556-9d92-14e58177fea6";
+
+        mockOwner(lodgeOwnerId);
+        mockLodgeAutomaticApproval(lodgeId, fakeOwnerId);
+
+        assertThrows(ForbiddenException.class, () -> reservationService.getReservationsForLodge(UUID.fromString(lodgeId)));
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
@@ -114,6 +160,20 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
                 .build();
 
         when(restService.getUserById(any(UUID.class))).thenReturn(mockUserDTO);
+    }
+
+    private void mockLodgeAutomaticApproval(String lodgeId, String lodgeOwnerId) {
+        LodgeDto mockLodgeDTO = LodgeDto.builder()
+                .id(UUID.fromString(lodgeId))
+                .ownerId(UUID.fromString(lodgeOwnerId))
+                .name("Vikendica")
+                .location("Lokacija1")
+                .minimalGuestNumber(1)
+                .maximalGuestNumber(3)
+                .approvalType("AUTOMATIC")
+                .build();
+
+        when(restService.getLodgeById(any(UUID.class))).thenReturn(mockLodgeDTO);
     }
 
 }
