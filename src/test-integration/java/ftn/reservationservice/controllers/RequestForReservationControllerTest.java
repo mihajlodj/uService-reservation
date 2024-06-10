@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,6 +121,22 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
                 .andExpect(jsonPath("$.status").value("APPROVED"));
+
+    }
+
+    @Test
+    public void testGetHostReservationRequestsSuccess() throws Exception{
+        authenticateHost();
+
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/all/host")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(4)));
 
     }
 
