@@ -140,6 +140,22 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
 
     }
 
+    @Test
+    public void testGetGuestReservationRequestsSuccess() throws Exception{
+        authenticateGuest();
+
+        String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
+        mockGuest(guestId);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/all/guest")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(4)));
+
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
