@@ -37,6 +37,7 @@ public class ReservationService {
     public Reservation createReservation(RequestForReservation request) {
         Reservation reservation = ReservationMapper.INSTANCE.toReservation(request);
         reservation.setStatus(ReservationStatus.ACTIVE);
+        reservation.setRequestForReservationId(request.getId());
         return reservationRepository.save(reservation);
     }
 
