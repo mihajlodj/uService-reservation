@@ -305,4 +305,10 @@ public class RequestForReservationService {
         return RequestForReservationMapper.INSTANCE.toDto(request);
     }
 
+    public void cancelRequestForReservation(UUID requestForReservationId) {
+        RequestForReservation request = requestForReservationRepository.findById(requestForReservationId).orElseThrow(() -> new NotFoundException("Request For Reservation doesn't exist"));
+        request.setStatus(RequestForReservationStatus.CANCELED);
+        requestForReservationRepository.save(request);
+    }
+
 }

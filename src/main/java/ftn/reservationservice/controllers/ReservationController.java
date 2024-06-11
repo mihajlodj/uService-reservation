@@ -1,13 +1,11 @@
 package ftn.reservationservice.controllers;
 
+import ftn.reservationservice.domain.dtos.RequestForReservationStatusUpdateRequest;
 import ftn.reservationservice.services.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -58,6 +56,12 @@ public class ReservationController {
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> getAllReservationsForCancelation() {
         return ResponseEntity.ok(reservationService.getAllReservationsForCancelation());
+    }
+
+    @PutMapping("/cancellation/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> cancelReservation(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservationService.cancelReservation(id));
     }
 
 }

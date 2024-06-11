@@ -4,4 +4,5 @@ public enum RequestForReservationStatus {
     WAITING_FOR_RESPONSE,
     APPROVED,
     DENIED,
+    CANCELED,
 }

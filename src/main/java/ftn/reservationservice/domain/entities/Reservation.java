@@ -31,6 +31,9 @@ public class Reservation {
     private UUID ownerId;
 
     @Column(nullable = false)
+    private UUID requestForReservationId;
+
+    @Column(nullable = false)
     private double price;
 
     @Column(nullable = false)
