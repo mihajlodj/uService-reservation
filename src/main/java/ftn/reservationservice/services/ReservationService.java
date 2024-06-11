@@ -16,6 +16,7 @@ import ftn.reservationservice.repositories.ReservationRepository;
 import ftn.reservationservice.utils.AuthUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ import java.util.UUID;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class ReservationService {
 
     private final RestService restService;
@@ -32,6 +32,14 @@ public class ReservationService {
     private final RequestForReservationService requestForReservationService;
 
     private final ReservationRepository reservationRepository;
+
+    public ReservationService(RestService restService,
+                              ReservationRepository reservationRepository,
+                              @Lazy RequestForReservationService requestForReservationService) {
+        this.restService = restService;
+        this.reservationRepository = reservationRepository;
+        this.requestForReservationService = requestForReservationService;
+    }
 
     public List<Reservation> getActiveReservationsForLodge(UUID lodgeId) {
         return reservationRepository.findByStatusAndLodgeId(ReservationStatus.ACTIVE, lodgeId);
@@ -123,7 +131,7 @@ public class ReservationService {
         checkIfDateRequirementsForCancelationAreMet(reservation);
 
         executeReservationCancelation(reservation);
-        requestForReservationService.cancelRequestForReservation(reservation.getRequestForReservationId());
+        cancelReservationRequest(reservation.getRequestForReservationId());
 
         return reservation;
     }
@@ -158,7 +166,7 @@ public class ReservationService {
     }
 
     private void cancelReservationRequest(UUID reservationRequestId) {
-
+        requestForReservationService.cancelRequestForReservation(reservationRequestId);
     }
 
 }
