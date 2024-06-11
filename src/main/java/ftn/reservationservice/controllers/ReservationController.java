@@ -42,4 +42,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationsForLodge(lodgeId));
     }
 
+    @GetMapping("/host/{id}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getReservationByIdHost(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservationService.getReservationByIdHost(id));
+    }
+
 }

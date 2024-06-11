@@ -85,4 +85,13 @@ public class ReservationService {
         return lodge;
     }
 
+    public ReservationDto getReservationByIdHost(UUID id) {
+        UserDto host = getLoggedInUser();
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Reservation doesn't exist"));
+        if (!reservation.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservation for lodges you own.");
+        }
+        return ReservationMapper.INSTANCE.toDto(reservation);
+    }
+
 }
