@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -101,6 +102,13 @@ public class ReservationService {
             throw new ForbiddenException("You can only get reservation for lodges you made reservations for.");
         }
         return ReservationMapper.INSTANCE.toDto(reservation);
+    }
+
+    public List<ReservationDto> getAllReservationsForCancelation() {
+        UserDto guest = getLoggedInUser();
+        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
+        List<Reservation> reservations = reservationRepository.findActiveReservationsByGuestIdAndFutureDate(guest.getId(), futureDate);
+        return ReservationMapper.INSTANCE.toDto(reservations);
     }
 
 }

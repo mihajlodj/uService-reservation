@@ -54,4 +54,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getReservationByIdGuest(id));
     }
 
+    @GetMapping("/all/cancelation")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getAllReservationsForCancelation() {
+        return ResponseEntity.ok(reservationService.getAllReservationsForCancelation());
+    }
+
 }
