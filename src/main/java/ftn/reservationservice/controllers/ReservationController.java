@@ -24,4 +24,40 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.countCanceledReservationsByGuest(guestId));
     }
 
+    @GetMapping("/all/host")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getMyReservationsHost() {
+        return ResponseEntity.ok(reservationService.getMyReservationsHost());
+    }
+
+    @GetMapping("/all/guest")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getMyReservationsGuest() {
+        return ResponseEntity.ok(reservationService.getMyReservationsGuest());
+    }
+
+    @GetMapping("/all/{lodgeId}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getReservationsForLodge(@PathVariable UUID lodgeId) {
+        return ResponseEntity.ok(reservationService.getReservationsForLodge(lodgeId));
+    }
+
+    @GetMapping("/host/{id}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getReservationByIdHost(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservationService.getReservationByIdHost(id));
+    }
+
+    @GetMapping("/guest/{id}")
+    @PreAuthorize("hasAuthority('HOST')")
+    public ResponseEntity<?> getReservationByIdGuest(@PathVariable UUID id) {
+        return ResponseEntity.ok(reservationService.getReservationByIdGuest(id));
+    }
+
+    @GetMapping("/all/cancelation")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> getAllReservationsForCancelation() {
+        return ResponseEntity.ok(reservationService.getAllReservationsForCancelation());
+    }
+
 }

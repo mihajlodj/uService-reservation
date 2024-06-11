@@ -1,11 +1,14 @@
 package ftn.reservationservice.services;
 
 import ftn.reservationservice.domain.dtos.CanceledReservationsCountDto;
+import ftn.reservationservice.domain.dtos.LodgeDto;
+import ftn.reservationservice.domain.dtos.ReservationDto;
 import ftn.reservationservice.domain.dtos.UserDto;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.entities.ReservationStatus;
 import ftn.reservationservice.domain.mappers.ReservationMapper;
+import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
 import ftn.reservationservice.repositories.ReservationRepository;
@@ -14,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,6 +45,70 @@ public class ReservationService {
         return CanceledReservationsCountDto.builder()
                 .count(count)
                 .build();
+    }
+
+    public List<ReservationDto> getMyReservationsHost() {
+        UserDto host = getLoggedInUser();
+        List<Reservation> reservations = reservationRepository.findByOwnerId(host.getId());
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    private UserDto getLoggedInUser() {
+        UUID id = AuthUtils.getLoggedUserId();
+        UserDto user = restService.getUserById(id);
+        if (user == null) {
+            throw new NotFoundException("User doesn't exist");
+        }
+        return user;
+    }
+
+    public List<ReservationDto> getMyReservationsGuest() {
+        UserDto guest = getLoggedInUser();
+        List<Reservation> reservations = reservationRepository.findByGuestId(guest.getId());
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    public List<ReservationDto> getReservationsForLodge(UUID lodgeId) {
+        UserDto host = getLoggedInUser();
+        LodgeDto lodge = getLodge(lodgeId);
+        if (!lodge.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservations for lodges you own.");
+        }
+        List<Reservation> reservations = reservationRepository.findByLodgeId(lodgeId);
+        return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    private LodgeDto getLodge(UUID lodgeId) {
+        LodgeDto lodge = restService.getLodgeById(lodgeId);
+        if (lodge == null) {
+            throw new NotFoundException("Lodge doesn't exist");
+        }
+        return lodge;
+    }
+
+    public ReservationDto getReservationByIdHost(UUID id) {
+        UserDto host = getLoggedInUser();
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Reservation doesn't exist"));
+        if (!reservation.getOwnerId().equals(host.getId())) {
+            throw new ForbiddenException("You can only get reservation for lodges you own.");
+        }
+        return ReservationMapper.INSTANCE.toDto(reservation);
+    }
+
+    public ReservationDto getReservationByIdGuest(UUID id) {
+        UserDto guest = getLoggedInUser();
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new NotFoundException("Reservation doesn't exist"));
+        if (!reservation.getGuestId().equals(guest.getId())) {
+            throw new ForbiddenException("You can only get reservation for lodges you made reservations for.");
+        }
+        return ReservationMapper.INSTANCE.toDto(reservation);
+    }
+
+    public List<ReservationDto> getAllReservationsForCancelation() {
+        UserDto guest = getLoggedInUser();
+        LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
+        List<Reservation> reservations = reservationRepository.findActiveReservationsByGuestIdAndFutureDate(guest.getId(), futureDate);
+        return ReservationMapper.INSTANCE.toDto(reservations);
     }
 
 }
