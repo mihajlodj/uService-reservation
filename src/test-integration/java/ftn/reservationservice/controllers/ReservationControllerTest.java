@@ -125,6 +125,30 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
 
     }
 
+    @Test
+    public void testGetReservationByIdHostSuccess() throws Exception {
+        String lodgeOwnerId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        mockOwner(lodgeOwnerId);
+
+        String reservationId = "b86553e1-2552-41cb-9e40-7aaaaa424850";
+
+        mockMvc.perform(get("/api/reservation/host/" + reservationId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(reservationId))
+                .andExpect(jsonPath("$.lodgeId").value("b86553e1-2552-41cb-9e40-7ef87c424850"))
+                .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
+                .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
+                .andExpect(jsonPath("$.price").value(99.99))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.numberOfGuests").value(2))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));;
+
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
