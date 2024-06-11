@@ -8,6 +8,7 @@ import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.entities.ReservationStatus;
 import ftn.reservationservice.domain.mappers.ReservationMapper;
+import ftn.reservationservice.exception.exceptions.BadRequestException;
 import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
@@ -27,6 +28,8 @@ import java.util.UUID;
 public class ReservationService {
 
     private final RestService restService;
+
+    private final RequestForReservationService requestForReservationService;
 
     private final ReservationRepository reservationRepository;
 
@@ -110,6 +113,52 @@ public class ReservationService {
         LocalDateTime futureDate = LocalDateTime.now().plusDays(1);
         List<Reservation> reservations = reservationRepository.findActiveReservationsByGuestIdAndFutureDate(guest.getId(), futureDate);
         return ReservationMapper.INSTANCE.toDto(reservations);
+    }
+
+    public Reservation cancelReservation(UUID reservationId) {
+        UserDto guest = getLoggedInUser();
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new NotFoundException("Reservation doesn't exist"));
+        checkDidGuestMadeReservation(guest, reservation);
+        checkReservationStatusIsACTIVE(reservation);
+        checkIfDateRequirementsForCancelationAreMet(reservation);
+
+        executeReservationCancelation(reservation);
+        requestForReservationService.cancelRequestForReservation(reservation.getRequestForReservationId());
+
+        return reservation;
+    }
+
+    private void checkDidGuestMadeReservation(UserDto guest, Reservation reservation) {
+        if (!reservation.getGuestId().equals(guest.getId())) {
+            throw new ForbiddenException("You can only cancel reservation you made.");
+        }
+    }
+
+    private void checkReservationStatusIsACTIVE(Reservation reservation) {
+        if (reservation.getStatus() != ReservationStatus.ACTIVE) {
+            throw new BadRequestException("You can cancel only ACTIVE reservations.");
+        }
+    }
+
+    private void checkIfDateRequirementsForCancelationAreMet(Reservation reservation) {
+        // check if dateTime.now.plusOneDay is before reservation.getDateFrom
+        LocalDateTime lastValidCancelationDate = getLastValidCancelationDate();
+        if (!lastValidCancelationDate.isBefore(reservation.getDateFrom())) {
+            throw new BadRequestException("You can cancel reservation only if start date is at least one day before reservation start.");
+        }
+    }
+
+    private LocalDateTime getLastValidCancelationDate() {
+        return LocalDateTime.now().plusDays(1);
+    }
+
+    private void executeReservationCancelation(Reservation reservation) {
+        reservation.setStatus(ReservationStatus.CANCELED);
+        reservationRepository.save(reservation);
+    }
+
+    private void cancelReservationRequest(UUID reservationRequestId) {
+
     }
 
 }
