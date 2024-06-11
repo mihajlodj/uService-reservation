@@ -123,7 +123,7 @@ public class ReservationService {
         return ReservationMapper.INSTANCE.toDto(reservations);
     }
 
-    public Reservation cancelReservation(UUID reservationId) {
+    public ReservationDto cancelReservation(UUID reservationId) {
         UserDto guest = getLoggedInUser();
         Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new NotFoundException("Reservation doesn't exist"));
         checkDidGuestMadeReservation(guest, reservation);
@@ -133,7 +133,7 @@ public class ReservationService {
         executeReservationCancelation(reservation);
         cancelReservationRequest(reservation.getRequestForReservationId());
 
-        return reservation;
+        return ReservationMapper.INSTANCE.toDto(reservation);
     }
 
     private void checkDidGuestMadeReservation(UserDto guest, Reservation reservation) {
