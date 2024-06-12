@@ -46,9 +46,10 @@ public class RequestForReservationService {
 
         // TODO: NOTIFICATION: send notification to LodgeOwner (HOST) that RequestForReservation is created
 
-        requestAutomaticApproval(request, lodge, guest);
+        RequestForReservation createdRequest = requestForReservationRepository.save(request);
+        requestAutomaticApproval(createdRequest, lodge, guest);
 
-        return RequestForReservationMapper.INSTANCE.toDto(requestForReservationRepository.save(request));
+        return RequestForReservationMapper.INSTANCE.toDto(createdRequest);
     }
 
     private UserDto getLoggedInUser() {
@@ -117,7 +118,8 @@ public class RequestForReservationService {
     public LodgeAvailabilityPeriodDto getLodgeAvailabilityPeriodCompatibleWithRequest(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
         LodgeAvailabilityPeriodDto retVal = null;
         for (LodgeAvailabilityPeriodDto availabilityPeriod : availabilityPeriods) {
-            if (availabilityPeriod.getDateFrom().isBefore(request.getDateFrom()) && availabilityPeriod.getDateTo().isAfter(request.getDateTo()) ) {
+            if ((availabilityPeriod.getDateFrom().isBefore(request.getDateFrom()) || availabilityPeriod.getDateFrom().isEqual(request.getDateFrom())) &&
+                    (availabilityPeriod.getDateTo().isAfter(request.getDateTo()) || availabilityPeriod.getDateTo().isEqual(request.getDateTo()))) {
                 retVal = availabilityPeriod;
                 break;
             }
