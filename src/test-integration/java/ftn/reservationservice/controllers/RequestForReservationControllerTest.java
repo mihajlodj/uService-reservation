@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -56,8 +57,8 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDate.parse("2024-05-02", DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay())
+                .dateTo(LocalDate.parse("2024-05-04", DateTimeFormatter.ofPattern("yyyy-MM-dd")).atStartOfDay())
                 .numberOfGuests(2)
                 .build();
 
@@ -71,8 +72,8 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.guestId").value(userId))
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(120.0))
-                .andExpect(jsonPath("$.dateFrom").value("2024-05-02 20:10:21.2632212"))
-                .andExpect(jsonPath("$.dateTo").value("2024-05-04 20:10:21.2632212"))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-02"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-04"))
                 .andExpect(jsonPath("$.numberOfGuests").value(request.getNumberOfGuests()))
                 .andExpect(jsonPath("$.status").value("APPROVED"));
 
@@ -174,8 +175,8 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
-                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
-                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23"))
                 .andExpect(jsonPath("$.numberOfGuests").value(2))
                 .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
 
@@ -200,8 +201,8 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
-                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
-                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23"))
                 .andExpect(jsonPath("$.numberOfGuests").value(2))
                 .andExpect(jsonPath("$.status").value("WAITING_FOR_RESPONSE"));
 
@@ -258,8 +259,8 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
         LodgeAvailabilityPeriodDto mockLodgeAvailabilityPeriodDTO1 = LodgeAvailabilityPeriodDto.builder()
                 .id(UUID.fromString(lodgeAvailabilityPeriod1Id))
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-01 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-29 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-29 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .priceType("PER_LODGE")
                 .price(60)
                 .build();

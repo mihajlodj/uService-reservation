@@ -142,8 +142,8 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
                 .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
-                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
-                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23"))
                 .andExpect(jsonPath("$.numberOfGuests").value(2))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));;
 
@@ -167,8 +167,8 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
                 .andExpect(jsonPath("$.guestId").value("e49fcaa5-d45b-4556-9d91-13e58187fea6"))
                 .andExpect(jsonPath("$.ownerId").value(lodgeOwnerId))
                 .andExpect(jsonPath("$.price").value(99.99))
-                .andExpect(jsonPath("$.dateFrom").value("2024-05-19 20:10:21.2632210"))
-                .andExpect(jsonPath("$.dateTo").value("2024-05-23 20:10:21.2632210"))
+                .andExpect(jsonPath("$.dateFrom").value("2024-05-19"))
+                .andExpect(jsonPath("$.dateTo").value("2024-05-23"))
                 .andExpect(jsonPath("$.numberOfGuests").value(2))
                 .andExpect(jsonPath("$.status").value("ACTIVE"));;
 
