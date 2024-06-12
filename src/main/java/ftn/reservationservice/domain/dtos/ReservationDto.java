@@ -1,6 +1,8 @@
 package ftn.reservationservice.domain.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ftn.reservationservice.domain.entities.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,10 +25,12 @@ public class ReservationDto {
     private UUID ownerId;
     private double price;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime dateFrom;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime dateTo;
     private int numberOfGuests;
     private ReservationStatus status;
