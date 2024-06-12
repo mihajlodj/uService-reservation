@@ -1,6 +1,8 @@
 package ftn.reservationservice.domain.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +24,13 @@ public class RequestForReservationCreateRequest {
     private UUID lodgeId;
 
     @NotNull(message = "DateFrom can't be null")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime dateFrom;
 
     @NotNull(message = "DateTo can't be null")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSSSSSS")
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime dateTo;
 
     @NotNull(message = "Number of guests is required")

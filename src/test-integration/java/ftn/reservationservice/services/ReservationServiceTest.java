@@ -163,8 +163,8 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
         assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
         assertEquals(99.99, response.getPrice());
-        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
-        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(LocalDateTime.parse("2024-05-19 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateTo());
         assertEquals(2, response.getNumberOfGuests());
         assertEquals(ReservationStatus.ACTIVE, response.getStatus());
 
@@ -216,8 +216,8 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
         assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
         assertEquals(99.99, response.getPrice());
-        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
-        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(LocalDateTime.parse("2024-05-19 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateTo());
         assertEquals(2, response.getNumberOfGuests());
         assertEquals(ReservationStatus.ACTIVE, response.getStatus());
 
