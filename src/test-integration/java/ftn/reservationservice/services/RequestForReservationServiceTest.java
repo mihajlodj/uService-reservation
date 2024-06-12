@@ -57,8 +57,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -89,8 +89,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -115,8 +115,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -136,8 +136,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -157,8 +157,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -180,8 +180,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(4)
                 .build();
 
@@ -201,8 +201,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -222,8 +222,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-06-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-06-04 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-06-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-06-04 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -243,8 +243,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-14 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-14 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(2)
                 .build();
 
@@ -264,8 +264,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-05 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-05 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(3)
                 .build();
 
@@ -295,8 +295,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         RequestForReservationCreateRequest request = RequestForReservationCreateRequest.builder()
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-02 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-05 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-02 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-05 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .numberOfGuests(3)
                 .build();
 
@@ -647,8 +647,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
         assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
         assertEquals(99.99, response.getPrice());
-        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
-        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(LocalDateTime.parse("2024-05-19 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateTo());
         assertEquals(2, response.getNumberOfGuests());
         assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
 
@@ -699,8 +699,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertEquals(UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6"), response.getGuestId());
         assertEquals(UUID.fromString(lodgeOwnerId), response.getOwnerId());
         assertEquals(99.99, response.getPrice());
-        assertEquals(LocalDateTime.parse("2024-05-19 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateFrom());
-        assertEquals(LocalDateTime.parse("2024-05-23 20:10:21.263221", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")), response.getDateTo());
+        assertEquals(LocalDateTime.parse("2024-05-19 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateFrom());
+        assertEquals(LocalDateTime.parse("2024-05-23 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), response.getDateTo());
         assertEquals(2, response.getNumberOfGuests());
         assertEquals(RequestForReservationStatus.WAITING_FOR_RESPONSE, response.getStatus());
 
@@ -786,8 +786,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         LodgeAvailabilityPeriodDto mockLodgeAvailabilityPeriodDTO1 = LodgeAvailabilityPeriodDto.builder()
                 .id(UUID.fromString(lodgeAvailabilityPeriod1Id))
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-01 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-29 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-29 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .priceType("PER_LODGE")
                 .price(60)
                 .build();
@@ -803,8 +803,8 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         LodgeAvailabilityPeriodDto mockLodgeAvailabilityPeriodDTO1 = LodgeAvailabilityPeriodDto.builder()
                 .id(UUID.fromString(lodgeAvailabilityPeriod1Id))
                 .lodgeId(UUID.fromString(lodgeId))
-                .dateFrom(LocalDateTime.parse("2024-05-01 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
-                .dateTo(LocalDateTime.parse("2024-05-29 20:10:21.2632212", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSS")))
+                .dateFrom(LocalDateTime.parse("2024-05-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .dateTo(LocalDateTime.parse("2024-05-29 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .priceType("PER_GUEST")
                 .price(60)
                 .build();
