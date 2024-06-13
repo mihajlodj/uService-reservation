@@ -3,10 +3,12 @@ package ftn.reservationservice.controllers;
 import ftn.reservationservice.domain.dtos.RequestForReservationStatusUpdateRequest;
 import ftn.reservationservice.services.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -74,6 +76,14 @@ public class ReservationController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> checkIfUserHadReservationWithHost(@PathVariable UUID guestId, @PathVariable UUID hostId) {
         return ResponseEntity.ok(reservationService.checkIfUserHadReservationWithHost(guestId, hostId));
+    }
+
+    @GetMapping("/check/reservationexistsindaterange/{lodgeId}/{dateFrom}/{dateTo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> checkIfReservationExistsInDateRange(@PathVariable UUID lodgeId,
+                                                                @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+                                                                @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        return ResponseEntity.ok(reservationService.checkIfReservationExistsInDateRange(lodgeId, dateFrom, dateTo));
     }
 
     @DeleteMapping("/delete/host/{hostId}")

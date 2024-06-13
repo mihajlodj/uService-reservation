@@ -176,6 +176,11 @@ public class ReservationService {
         return BoolCheckResponseDto.builder().value(exists).build();
     }
 
+    public BoolCheckResponseDto checkIfReservationExistsInDateRange(UUID lodgeId, LocalDateTime dateFrom, LocalDateTime dateTo) {
+        boolean exists = reservationRepository.existsByLodgeIdAndDateRangeOverlap(lodgeId, dateFrom, dateTo);
+        return BoolCheckResponseDto.builder().value(exists).build();
+    }
+
     public void deleteAllByHost(UUID hostId) {
         reservationRepository.deleteAllByOwnerId(hostId);
     }
