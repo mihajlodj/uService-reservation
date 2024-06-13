@@ -288,6 +288,42 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertFalse(response.isValue());
     }
 
+    @Test
+    public void testCheckIfUserHadReservationWithHostSuccess() {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea6");
+
+        BoolCheckResponseDto response = reservationService.checkIfUserHadReservationWithHost(guestId, hostId);
+
+        assertNotNull(response);
+        assertTrue(response.isValue());
+    }
+
+    @Test
+    public void testCheckIfUserHadReservationWithHostGuestNotFound() {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea3");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea6");
+
+        BoolCheckResponseDto response = reservationService.checkIfUserHadReservationWithHost(guestId, hostId);
+
+        assertNotNull(response);
+        assertFalse(response.isValue());
+    }
+
+    @Test
+    public void testCheckIfUserHadReservationWithHostHostNotFound() {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea3");
+
+        BoolCheckResponseDto response = reservationService.checkIfUserHadReservationWithHost(guestId, hostId);
+
+        assertNotNull(response);
+        assertFalse(response.isValue());
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))

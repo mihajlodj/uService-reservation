@@ -217,6 +217,49 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
                 .andExpect(jsonPath("$.value").value(false));
     }
 
+    @Test
+    public void testCheckIfUserHadReservationWithHostSuccess() throws Exception {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea6");
+
+        mockMvc.perform(get("/api/reservation/check/userhadreservationwithhost/" + guestId + "/" + hostId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(true));
+
+    }
+
+    @Test
+    public void testCheckIfUserHadReservationWithHostGuestNotFound() throws Exception {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea3");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea6");
+
+        mockMvc.perform(get("/api/reservation/check/userhadreservationwithhost/" + guestId + "/" + hostId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(false));
+    }
+
+    @Test
+    public void testCheckIfUserHadReservationWithHostHostNotFound() throws Exception {
+        authenticateAdmin();
+        UUID guestId = UUID.fromString("e49fcaa5-d45b-4556-9d91-13e58187fea6");
+        UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea3");
+
+        mockMvc.perform(get("/api/reservation/check/userhadreservationwithhost/" + guestId + "/" + hostId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(false));
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
