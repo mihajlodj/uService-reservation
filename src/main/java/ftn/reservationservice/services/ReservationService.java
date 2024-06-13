@@ -176,4 +176,8 @@ public class ReservationService {
         return BoolCheckResponseDto.builder().value(exists).build();
     }
 
+    public void deleteAllByHost(UUID hostId) {
+        reservationRepository.deleteAllByOwnerId(hostId);
+    }
+
 }

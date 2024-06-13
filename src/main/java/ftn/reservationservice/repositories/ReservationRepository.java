@@ -33,4 +33,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
 
     boolean existsByGuestIdAndOwnerId(UUID guestId, UUID ownerId);
 
+    void deleteAllByOwnerId(UUID ownerId);
+
 }
