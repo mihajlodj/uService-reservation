@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -253,6 +255,46 @@ public class ReservationControllerTest extends AuthPostgresIntegrationTest {
         UUID hostId = UUID.fromString("e49fcab5-d45b-4556-9d91-14e58177fea3");
 
         mockMvc.perform(get("/api/reservation/check/userhadreservationwithhost/" + guestId + "/" + hostId)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(false));
+    }
+
+    @Test
+    public void testCheckIfReservationExistsInDateRangeSuccess() throws Exception{
+        authenticateAdmin();
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-05-19T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-05-23T00:00:00");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        String sDateFrom = dateFrom.format(formatter);
+        String sDateTo = dateTo.format(formatter);
+
+        mockMvc.perform(get("/api/reservation/check/reservationexistsindaterange/" + lodgeId + "/" + sDateFrom + "/" + sDateTo)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(true));
+    }
+
+    @Test
+    public void testCheckIfReservationExistsInDateRangeWhenItDoesnt() throws Exception{
+        authenticateAdmin();
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-04-12T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-04-18T00:00:00");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        String sDateFrom = dateFrom.format(formatter);
+        String sDateTo = dateTo.format(formatter);
+
+        mockMvc.perform(get("/api/reservation/check/reservationexistsindaterange/" + lodgeId + "/" + sDateFrom + "/" + sDateTo)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

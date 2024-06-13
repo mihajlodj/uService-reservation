@@ -33,4 +33,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
 
     boolean existsByGuestIdAndOwnerId(UUID guestId, UUID ownerId);
 
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
+            "FROM Reservation r " +
+            "WHERE r.lodgeId = :lodgeId " +
+            "AND r.dateFrom <= :dateTo " +
+            "AND r.dateTo >= :dateFrom")
+    boolean existsByLodgeIdAndDateRangeOverlap(
+            @Param("lodgeId") UUID lodgeId,
+            @Param("dateFrom") LocalDateTime dateFrom,
+            @Param("dateTo") LocalDateTime dateTo);
+
 }
