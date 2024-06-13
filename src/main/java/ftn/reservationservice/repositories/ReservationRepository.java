@@ -43,4 +43,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo") LocalDateTime dateTo);
 
+    void deleteAllByOwnerId(UUID ownerId);
+
 }

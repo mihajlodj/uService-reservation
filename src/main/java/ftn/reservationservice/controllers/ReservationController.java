@@ -86,4 +86,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.checkIfReservationExistsInDateRange(lodgeId, dateFrom, dateTo));
     }
 
+    @DeleteMapping("/delete/host/{hostId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> deleteAllLodges(@PathVariable UUID hostId) {
+        reservationService.deleteAllByHost(hostId);
+        return ResponseEntity.ok().build();
+    }
+
 }
