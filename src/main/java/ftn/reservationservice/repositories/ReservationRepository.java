@@ -29,4 +29,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
     @Query("SELECT r FROM Reservation r WHERE r.guestId = :guestId AND r.status = 'ACTIVE' AND r.dateFrom > :futureDate")
     List<Reservation> findActiveReservationsByGuestIdAndFutureDate(@Param("guestId") UUID guestId, @Param("futureDate") LocalDateTime futureDate);
 
+    boolean existsByGuestIdAndLodgeId(UUID guestId, UUID lodgeId);
+
+    boolean existsByGuestIdAndOwnerId(UUID guestId, UUID ownerId);
+
 }

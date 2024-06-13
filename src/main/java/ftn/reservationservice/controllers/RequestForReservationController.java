@@ -6,10 +6,12 @@ import ftn.reservationservice.services.RequestForReservationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RestController
@@ -60,6 +62,14 @@ public class RequestForReservationController {
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> getReservationRequestByIdGuest(@PathVariable UUID id) {
         return ResponseEntity.ok(requestForReservationService.getReservationRequestByIdGuest(id));
+    }
+
+    @GetMapping("/check/requestforreservationexists/{lodgeId}/{dateFrom}/{dateTo}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> checkIfRequestForReservationExists(@PathVariable UUID lodgeId,
+                                                            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+                                                            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
+        return ResponseEntity.ok(requestForReservationService.checkIfRequestForReservationExists(lodgeId, dateFrom, dateTo));
     }
 
 }

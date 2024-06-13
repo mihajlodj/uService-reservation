@@ -313,4 +313,9 @@ public class RequestForReservationService {
         requestForReservationRepository.save(request);
     }
 
+    public BoolCheckResponseDto checkIfRequestForReservationExists(UUID lodgeId, LocalDateTime dateFrom, LocalDateTime dateTo) {
+        boolean exists = requestForReservationRepository.existsByLodgeIdAndDateRangeOverlap(lodgeId, dateFrom, dateTo);
+        return BoolCheckResponseDto.builder().value(exists).build();
+    }
+
 }

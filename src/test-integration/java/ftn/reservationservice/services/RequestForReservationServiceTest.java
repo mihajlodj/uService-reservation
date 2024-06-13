@@ -735,6 +735,32 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
         assertThrows(ForbiddenException.class, () -> requestForReservationService.getReservationRequestByIdGuest(UUID.fromString(requestForReservationId)));
     }
 
+    @Test
+    public void testCheckIfRequestForReservationExistsSuccess() {
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-05-12T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-05-18T00:00:00");
+
+        BoolCheckResponseDto response = requestForReservationService.checkIfRequestForReservationExists(lodgeId, dateFrom, dateTo);
+
+        assertNotNull(response);
+        assertTrue(response.isValue());
+
+    }
+
+    @Test
+    public void testCheckIfRequestForReservationExistsWhenItDoesnt() {
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-04-12T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-04-18T23:59:59");
+
+        BoolCheckResponseDto response = requestForReservationService.checkIfRequestForReservationExists(lodgeId, dateFrom, dateTo);
+
+        assertNotNull(response);
+        assertFalse(response.isValue());
+
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))

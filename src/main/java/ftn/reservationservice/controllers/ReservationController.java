@@ -64,4 +64,16 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.cancelReservation(id));
     }
 
+    @GetMapping("/check/userhadreservation/{guestId}/{lodgeId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> checkIfUserHadReservationInLodge(@PathVariable UUID guestId, @PathVariable UUID lodgeId) {
+        return ResponseEntity.ok(reservationService.checkIfUserHadReservationInLodge(guestId, lodgeId));
+    }
+
+    @GetMapping("/check/userhadreservationwithhost/{guestId}/{hostId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<?> checkIfUserHadReservationWithHost(@PathVariable UUID guestId, @PathVariable UUID hostId) {
+        return ResponseEntity.ok(reservationService.checkIfUserHadReservationWithHost(guestId, hostId));
+    }
+
 }

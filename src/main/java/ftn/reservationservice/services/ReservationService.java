@@ -1,9 +1,6 @@
 package ftn.reservationservice.services;
 
-import ftn.reservationservice.domain.dtos.CanceledReservationsCountDto;
-import ftn.reservationservice.domain.dtos.LodgeDto;
-import ftn.reservationservice.domain.dtos.ReservationDto;
-import ftn.reservationservice.domain.dtos.UserDto;
+import ftn.reservationservice.domain.dtos.*;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.Reservation;
 import ftn.reservationservice.domain.entities.ReservationStatus;
@@ -167,6 +164,16 @@ public class ReservationService {
 
     private void cancelReservationRequest(UUID reservationRequestId) {
         requestForReservationService.cancelRequestForReservation(reservationRequestId);
+    }
+
+    public BoolCheckResponseDto checkIfUserHadReservationInLodge(UUID guestId, UUID lodgeId) {
+        boolean exists = reservationRepository.existsByGuestIdAndLodgeId(guestId, lodgeId);
+        return BoolCheckResponseDto.builder().value(exists).build();
+    }
+
+    public BoolCheckResponseDto checkIfUserHadReservationWithHost(UUID guestId, UUID hostId) {
+        boolean exists = reservationRepository.existsByGuestIdAndOwnerId(guestId, hostId);
+        return BoolCheckResponseDto.builder().value(exists).build();
     }
 
 }
