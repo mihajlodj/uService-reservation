@@ -71,7 +71,7 @@ public class ReservationController {
     }
 
     @GetMapping("/check/userhadreservationwithhost/{guestId}/{hostId}")
-    @PreAuthorize("hasAuthority('GUEST')")      // ADMIN
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> checkIfUserHadReservationWithHost(@PathVariable UUID guestId, @PathVariable UUID hostId) {
         return ResponseEntity.ok(reservationService.checkIfUserHadReservationWithHost(guestId, hostId));
     }
