@@ -171,4 +171,9 @@ public class ReservationService {
         return BoolCheckResponseDto.builder().value(exists).build();
     }
 
+    public BoolCheckResponseDto checkIfUserHadReservationWithHost(UUID guestId, UUID hostId) {
+        boolean exists = reservationRepository.existsByGuestIdAndOwnerId(guestId, hostId);
+        return BoolCheckResponseDto.builder().value(exists).build();
+    }
+
 }

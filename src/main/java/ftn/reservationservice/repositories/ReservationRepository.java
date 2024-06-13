@@ -31,4 +31,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID>,
 
     boolean existsByGuestIdAndLodgeId(UUID guestId, UUID lodgeId);
 
+    boolean existsByGuestIdAndOwnerId(UUID guestId, UUID ownerId);
+
 }

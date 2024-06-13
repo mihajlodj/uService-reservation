@@ -70,4 +70,10 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.checkIfUserHadReservationInLodge(guestId, lodgeId));
     }
 
+    @GetMapping("/check/userhadreservationwithhost/{guestId}/{hostId}")
+    @PreAuthorize("hasAuthority('GUEST')")      // ADMIN
+    public ResponseEntity<?> checkIfUserHadReservationWithHost(@PathVariable UUID guestId, @PathVariable UUID hostId) {
+        return ResponseEntity.ok(reservationService.checkIfUserHadReservationWithHost(guestId, hostId));
+    }
+
 }
