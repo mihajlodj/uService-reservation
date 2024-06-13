@@ -324,6 +324,32 @@ public class ReservationServiceTest extends AuthPostgresIntegrationTest {
         assertFalse(response.isValue());
     }
 
+    @Test
+    public void testCheckIfReservationExistsInDateRangeSuccess() {
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-05-19T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-05-23T00:00:00");
+
+        BoolCheckResponseDto response = reservationService.checkIfReservationExistsInDateRange(lodgeId, dateFrom, dateTo);
+
+        assertNotNull(response);
+        assertTrue(response.isValue());
+
+    }
+
+    @Test
+    public void testCheckIfReservationExistsInDateRangeWhenItDoesnt() {
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-04-19T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-04-23T00:00:00");
+
+        BoolCheckResponseDto response = reservationService.checkIfReservationExistsInDateRange(lodgeId, dateFrom, dateTo);
+
+        assertNotNull(response);
+        assertFalse(response.isValue());
+
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
