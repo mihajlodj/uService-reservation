@@ -208,6 +208,46 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
 
     }
 
+    @Test
+    public void testCheckIfRequestForReservationExistsSuccess() throws Exception{
+        authenticateAdmin();
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-05-12T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-05-18T00:00:00");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        String sDateFrom = dateFrom.format(formatter);
+        String sDateTo = dateTo.format(formatter);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/check/requestforreservationexists/" + lodgeId + "/" + sDateFrom + "/" + sDateTo)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(true));
+    }
+
+    @Test
+    public void testCheckIfRequestForReservationExistsWhenItDoesnt() throws Exception {
+        authenticateAdmin();
+        UUID lodgeId = UUID.fromString("b86553e1-2552-41cb-9e40-7ef87c424850");
+        LocalDateTime dateFrom = LocalDateTime.parse("2024-04-12T00:00:00");
+        LocalDateTime dateTo = LocalDateTime.parse("2024-04-18T00:00:00");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        String sDateFrom = dateFrom.format(formatter);
+        String sDateTo = dateTo.format(formatter);
+
+        mockMvc.perform(get("/api/reservation/requestforreservation/check/requestforreservationexists/" + lodgeId + "/" + sDateFrom + "/" + sDateTo)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.value").value(false));
+    }
+
     private void mockGuest(String userId) {
         UserDto mockUserDTO = UserDto.builder()
                 .id(UUID.fromString(userId))
