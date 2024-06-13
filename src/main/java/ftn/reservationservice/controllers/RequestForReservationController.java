@@ -65,7 +65,7 @@ public class RequestForReservationController {
     }
 
     @GetMapping("/check/requestforreservationexists/{lodgeId}/{dateFrom}/{dateTo}")
-    @PreAuthorize("hasAuthority('GUEST')")       // ADMIN
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> checkIfRequestForReservationExists(@PathVariable UUID lodgeId,
                                                             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
                                                             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo) {
