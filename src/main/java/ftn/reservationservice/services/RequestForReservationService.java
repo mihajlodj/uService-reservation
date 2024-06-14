@@ -275,12 +275,8 @@ public class RequestForReservationService {
 
     private void denyRequestsForReservation(List<RequestForReservation> requestsForReservation) {
         for (RequestForReservation request : requestsForReservation) {
-            System.out.println("Saving request with id {} and status {}" + request.getId() + request.getStatus());
             request.setStatus(RequestForReservationStatus.DENIED);
-            System.out.println("Saving request with id {} and status {}" + request.getId() + request.getStatus());
             requestForReservationRepository.save(request);
-            RequestForReservation re = requestForReservationRepository.findById(request.getId()).orElseThrow(() -> new NotFoundException("PONOVO TRAZENJE NIJE USPELO"));
-            System.out.println("Saving request with id {} and status {}" + re.getId() + re.getStatus());
             // TODO: NOTIFICATION: send notification to guest that reservation request whas denied
         }
     }
