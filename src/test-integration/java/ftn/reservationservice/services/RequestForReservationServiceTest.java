@@ -397,6 +397,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+        mockLodgeAvailabilityPeriods(lodgeId);
 
         String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
 
@@ -427,6 +428,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
         String lodgeId = "b86553e1-2552-41cb-9e40-7ef87c424850";
         mockLodgeManualApproval(lodgeId, lodgeOwnerId);
+        mockLodgeAvailabilityPeriods(lodgeId);
 
         String guestId = "e49fcaa5-d45b-4556-9d91-13e58187fea6";
 
