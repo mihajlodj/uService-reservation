@@ -10,12 +10,16 @@ import ftn.reservationservice.exception.exceptions.ForbiddenException;
 import ftn.reservationservice.exception.exceptions.NotFoundException;
 import ftn.reservationservice.repositories.RequestForReservationRepository;
 import ftn.reservationservice.utils.AuthUtils;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -224,13 +228,16 @@ public class RequestForReservationService {
         }
     }
 
+    @Transactional(noRollbackFor = BadRequestException.class)
     public RequestForReservationDto update(UUID id, RequestForReservationStatusUpdateRequest updateRequest) {
         RequestForReservation request = getRequestForReservation(id);
         checkIfRequestForReservationStatusCanBeUpdated(request);
         UserDto owner = getLoggedInUser();
         LodgeDto lodge = getLodge(request.getLodgeId());
+        List<LodgeAvailabilityPeriodDto> availabilityPeriods = getLodgeAvailabilityPeriods(request.getLodgeId());
         checkIfLoggedInUserIsLodgeOwner(owner, lodge);
         checkIfApprovalTypeForLodgeIsManual(lodge);
+        checkIfThereIsLodgeAvailabilityPeriodIsntDeleted(request, availabilityPeriods);
         RequestForReservationMapper.INSTANCE.update(request, updateRequest);
         checkIfRequestForReservationStatusIsValidAfterUpdate(request);
         RequestForReservation updatedRequest = requestForReservationRepository.save(request);
@@ -241,6 +248,37 @@ public class RequestForReservationService {
             requestForReservationDenied();
         }
         return RequestForReservationMapper.INSTANCE.toDto(updatedRequest);
+    }
+
+    private void checkIfThereIsLodgeAvailabilityPeriodIsntDeleted(RequestForReservation request, List<LodgeAvailabilityPeriodDto> availabilityPeriods) {
+        LodgeAvailabilityPeriodDto availabilityPeriod = getLodgeAvailabilityPeriodCompatibleWithRequest(request, availabilityPeriods);
+        if (availabilityPeriod == null) {
+            List<RequestForReservation> requestsThatNeedToBeDenied = findRequestForReservationWithOverlappingDateRangeThatNeedToBeDenied(request);
+            denyRequestsForReservation(requestsThatNeedToBeDenied);
+            throw new BadRequestException("There is no lodge availability period for selected date range.");
+        }
+    }
+
+    private List<RequestForReservation> findRequestForReservationWithOverlappingDateRangeThatNeedToBeDenied(RequestForReservation request) {
+        List<RequestForReservation> requestsThatNeedToBeDenied = new ArrayList<>();
+        List<RequestForReservation> requestsForReservation = getRequestsForReservationForLodge(request.getLodgeId());
+        for (RequestForReservation existingRequest : requestsForReservation) {
+            if (existingRequest.getStatus() == RequestForReservationStatus.WAITING_FOR_RESPONSE) {          // if existing request is waiting for response and date is overlapping deny it
+                if ((existingRequest.getDateTo().isAfter(request.getDateFrom()) || existingRequest.getDateTo().isEqual(request.getDateFrom()))
+                        && (existingRequest.getDateFrom().isBefore(request.getDateTo()) || existingRequest.getDateFrom().isEqual(request.getDateTo()))) {
+                    requestsThatNeedToBeDenied.add(existingRequest);
+                }
+            }
+        }
+        return requestsThatNeedToBeDenied;
+    }
+
+    private void denyRequestsForReservation(List<RequestForReservation> requestsForReservation) {
+        for (RequestForReservation request : requestsForReservation) {
+            request.setStatus(RequestForReservationStatus.DENIED);
+            requestForReservationRepository.save(request);
+            // TODO: NOTIFICATION: send notification to guest that reservation request whas denied
+        }
     }
 
     private void checkIfLoggedInUserIsLodgeOwner(UserDto owner, LodgeDto lodge) {
