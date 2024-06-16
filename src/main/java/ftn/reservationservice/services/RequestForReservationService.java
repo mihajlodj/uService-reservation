@@ -279,7 +279,8 @@ public class RequestForReservationService {
         for (RequestForReservation request : requestsForReservation) {
             request.setStatus(RequestForReservationStatus.DENIED);
             requestForReservationRepository.save(request);
-            // TODO: NOTIFICATION: send notification to guest that reservation request whas denied
+
+            notificationService.sendNotification(request.getGuestId().toString(), NotificationType.RESERVATION_RESPONSE_REJECT);
         }
     }
 
