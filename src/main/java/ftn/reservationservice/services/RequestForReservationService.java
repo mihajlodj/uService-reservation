@@ -1,6 +1,7 @@
 package ftn.reservationservice.services;
 
 import ftn.reservationservice.domain.dtos.*;
+import ftn.reservationservice.domain.entities.NotificationType;
 import ftn.reservationservice.domain.entities.RequestForReservation;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import ftn.reservationservice.domain.entities.Reservation;
@@ -30,6 +31,8 @@ public class RequestForReservationService {
 
     private final ReservationService reservationService;
 
+    private final NotificationService notificationService;
+
     public RequestForReservationDto create(RequestForReservationCreateRequest requestForReservationCreateRequest) {
         RequestForReservation request = RequestForReservationMapper.INSTANCE.fromCreateRequest(requestForReservationCreateRequest);
         UserDto guest = getLoggedInUser();
@@ -44,7 +47,7 @@ public class RequestForReservationService {
         double calculatedPrice = calculatePrice(request, availabilityPeriods);
         request.setPrice(calculatedPrice);
 
-        // TODO: NOTIFICATION: send notification to LodgeOwner (HOST) that RequestForReservation is created
+        notificationService.sendNotification(lodge.getOwnerId().toString(), NotificationType.RESERVATION_REQUEST);
 
         RequestForReservation createdRequest = requestForReservationRepository.save(request);
         requestAutomaticApproval(createdRequest, lodge, guest);
@@ -195,8 +198,7 @@ public class RequestForReservationService {
         }
         reservationService.createReservation(request);
         request.setStatus(RequestForReservationStatus.APPROVED);
-        // TODO: NOTIFICATION: send notification to guest that host approved automatically reservation request
-
+        notificationService.sendNotification(guest.getId().toString(), NotificationType.RESERVATION_RESPONSE_ACCEPT);
     }
 
     public void delete(UUID id) {
@@ -238,7 +240,7 @@ public class RequestForReservationService {
             requestForReservationApproved(updatedRequest);
         }
         else {      // RequestForReservationStatus.DENIED
-            requestForReservationDenied();
+            requestForReservationDenied(updatedRequest.getGuestId());
         }
         return RequestForReservationMapper.INSTANCE.toDto(updatedRequest);
     }
@@ -269,12 +271,12 @@ public class RequestForReservationService {
 
     private void requestForReservationApproved(RequestForReservation request) {
         reservationService.createReservation(request);
-        // TODO: NOTIFICATION: send notification to guest that host approved manually reservation request
+        notificationService.sendNotification(request.getGuestId().toString(), NotificationType.RESERVATION_RESPONSE_ACCEPT);
     }
 
-    private void requestForReservationDenied() {
+    private void requestForReservationDenied(UUID guestId) {
         System.out.println("DENIED Request");
-        // TODO: NOTIFICATION: send notification to guest that host denied manually reservation request
+        notificationService.sendNotification(guestId.toString(), NotificationType.RESERVATION_RESPONSE_ACCEPT);
     }
 
     public List<RequestForReservationDto> getHostReservationRequests() {

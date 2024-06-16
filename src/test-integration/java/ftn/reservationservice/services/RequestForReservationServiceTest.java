@@ -2,6 +2,7 @@ package ftn.reservationservice.services;
 
 import ftn.reservationservice.AuthPostgresIntegrationTest;
 import ftn.reservationservice.domain.dtos.*;
+import ftn.reservationservice.domain.entities.NotificationType;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
 import ftn.reservationservice.exception.exceptions.BadRequestException;
 import ftn.reservationservice.exception.exceptions.ForbiddenException;
@@ -22,6 +23,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @Sql("/sql/reservation.sql")
@@ -38,6 +41,9 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
 
     @MockBean
     private RestService restService;
+
+    @MockBean
+    private NotificationService notificationService;
 
     @BeforeEach
     public void setup() {
@@ -62,6 +68,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
                 .numberOfGuests(2)
                 .build();
 
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
         RequestForReservationDto response = requestForReservationService.create(request);
 
         assertNotNull(response);
@@ -406,6 +413,7 @@ public class RequestForReservationServiceTest extends AuthPostgresIntegrationTes
                 .status(RequestForReservationStatus.APPROVED)
                 .build();
 
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
         RequestForReservationDto response = requestForReservationService.update(UUID.fromString(requestForReservationId),
                 updateRequest);
 
