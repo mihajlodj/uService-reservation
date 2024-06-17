@@ -3,7 +3,9 @@ package ftn.reservationservice.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ftn.reservationservice.AuthPostgresIntegrationTest;
 import ftn.reservationservice.domain.dtos.*;
+import ftn.reservationservice.domain.entities.NotificationType;
 import ftn.reservationservice.domain.entities.RequestForReservationStatus;
+import ftn.reservationservice.services.NotificationService;
 import ftn.reservationservice.services.RestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,6 +42,9 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
 
     @MockBean
     private RestService restService;
+
+    @MockBean
+    private NotificationService notificationService;
 
     @BeforeEach
     public void setup() {
@@ -62,6 +69,7 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .numberOfGuests(2)
                 .build();
 
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
         mockMvc.perform(post("/api/reservation/requestforreservation")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,6 +120,7 @@ public class RequestForReservationControllerTest extends AuthPostgresIntegration
                 .status(RequestForReservationStatus.APPROVED)
                 .build();
 
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
         mockMvc.perform(put("/api/reservation/requestforreservation/" + requestForReservationId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
